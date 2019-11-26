@@ -6,6 +6,7 @@ void testTimeDifference();
 void testTimeHasPassed();
 void testClockSet();
 void testPcbArrayInit();
+void testProcessSpawnDespawn();
 
 //===========================================================
 
@@ -22,6 +23,7 @@ int main() {
 
     //PCB Tests
     testPcbArrayInit();
+    testProcessSpawnDespawn();
 
     return 0;
 }
@@ -180,6 +182,25 @@ void testPcbArrayInit() {
 
     //Test label
     printf("-----\n");
+
+    free(pcbArray);
+}
+
+void testProcessSpawnDespawn() {
+    PCB* pcbArray = (PCB*)malloc(MAX_CHILD_PROCESSES * sizeof(PCB));
+    int i;
+
+    ossInitPcbArray(pcbArray);
+
+    //Test label
+    printf("Process Spawn/Despawn Tests:\n");
+
+    for(i = 0; i < 10; ++i) {
+        spawnDummyProcess(pcbArray);
+    }
+
+    printPcbArray(pcbArray);
+
 
     free(pcbArray);
 }

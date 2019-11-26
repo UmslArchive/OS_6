@@ -12,16 +12,34 @@ static int numActivePs = 0;
 
 //Static functions:
 
-static void addToActiveProcesses() {
+static PCB* scanForEmptyPcbSlot(PCB* pcbArray) {
+    if(pcbArray == NULL) {
+        fprintf(stderr, "ERROR: Couldn't scan for empty--nullptr\n");
+        return NULL;
+    }
+
+    PCB* iterator = pcbArray;
+    int i;
+    for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
+        if(iterator->state == NULL_PS){
+            return iterator;
+        }
+        iterator++;
+    }
+
+    return NULL;
+}
+
+int areActiveProcesses() {
+    return 0;
+}
+
+static void addProcessToPcbArray(PCB* pcbArray, pid_t pid) {
 
 }
 
 static void removeFromActiveProccesses(pid_t process) {
     //Scan PCB array for pid
-}
-
-int areActiveProcesses() {
-    return 0;
 }
 
 
@@ -123,4 +141,20 @@ int getIndexOfPid(PCB* pcbArray, pid_t pid) {
     }
 
     return -1;
+}
+
+int spawnDummyProcess(PCB* pcbArray) {
+    if(pcbArray == NULL) {
+        fprintf(stderr, "ERROR: Couldn't spawn dummy--nullptr\n");
+        return -1;
+    }
+
+    PCB* iterator = scanForEmptyPcbSlot(pcbArray);
+    if(iterator == NULL) {
+        fprintf(stderr, "ERROR: Couldn't spawn dummy--No Empty\n");
+        return -1;
+    }
+
+    iterator->state = READY;
+    iterator->pid = rand() % 99999;
 }

@@ -41,5 +41,6 @@ void killChildren();
 void printPcb(PCB* pcbArray, int position);
 void printPcbArray(PCB* pcbArray);
 int getIndexOfPid(PCB* pcbArray, pid_t pid);
+int spawnDummyProcess(PCB* pcbArray);
 
 #endif
