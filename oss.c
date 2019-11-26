@@ -25,7 +25,6 @@ int main(int arg, char* argv[]) {
 
     //Init Managers
     initOssProcessManager();
-    initMatricesAndVectors();
 
     //Init semaphore
     sem_t* shmSemPtr = initShmSemaphore(SHM_KEY_SEM, shmSemSize, &shmSemID, SHM_OSS_FLAGS);
