@@ -5,11 +5,9 @@
 //=========================================================
 
 #include "interrupts.h"
-#include "processManage.h"
+#include "shared.h"
 
 int main(int arg, char* argv[]) {
-
-    pid_t newestChildPid = 0;
     int i, j, k;
     
     //Initializations:

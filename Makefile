@@ -6,7 +6,7 @@
 
 CC = gcc
 CFLAGS = -I . -g
-OBJECTS = shared.o processManage.o interrupts.o
+OBJECTS = shared.o processManage.o interrupts.o clock.o message.o
 
 .SUFFIXES: .c .o
 

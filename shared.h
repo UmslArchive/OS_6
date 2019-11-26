@@ -21,15 +21,17 @@
 #include <time.h>
 #include <fcntl.h>
 
+#include "clock.h"
+#include "message.h"
+#include "processManage.h"
+
 //Keys
 extern const key_t SHM_KEY_SEM;     
 extern const key_t SHM_KEY_CLOCK;
 
-
 //IDs
 extern int shmSemID;
 extern int shmClockID;
-
 
 //Sizes
 extern const size_t shmSemSize;
@@ -41,12 +43,6 @@ extern const int SHM_USR_FLAGS;
 
 //----------------------------------------
 
-//Structs
-typedef struct clock_struct {
-    unsigned int seconds;
-    unsigned int nanoseconds;
-} Clock;
-
 //Shared mem init functions
 sem_t* initShmSemaphore(const key_t key, const size_t size, int* shmid, int flags);
 void* initSharedMemory(const key_t key, const size_t size, int* shmid, int flags);
@@ -55,13 +51,5 @@ void* initSharedMemory(const key_t key, const size_t size, int* shmid, int flags
 void detachAll();
 void cleanupSharedMemory(int* shmid);
 void cleanupAll();
-
-//Clock functions
-void initClock(Clock* clock);
-void setClock(Clock* clock, unsigned int sec, unsigned int nanosec);
-void advanceClock(Clock* mainClock, unsigned int sec, unsigned int nanosec);
-Clock timeDifference(Clock* subtractFrom, Clock* subtractAmount);
-void printClock(Clock* clock);
-int checkIfPassedTime(Clock* mainClock, Clock* timeLimit);
 
 #endif
