@@ -68,16 +68,18 @@ void killChildren() {
 }
 
 //Utility:
-void printPcb(PCB* pcbArray, PCB* pcbIterator) {
-    if(pcbArray == NULL || pcbIterator == NULL) {
+void printPcb(PCB* pcbArray, int position) {
+    if(pcbArray == NULL) {
         fprintf(stderr, "ERROR: Couldn't print PCB--nullptr\n");
         return;
     }
 
-    fprintf(stderr, "PCB#%.2d: pid(%d), state(%d)\n", 
-        getIndexOfPid(pcbArray, pcbIterator->pid), 
-        (int)pcbIterator->pid,
-        (int)pcbIterator->state
+    PCB*  iterator = (pcbArray + position);
+
+    fprintf(stderr, "PCB#%.2d: pid(%.5d), state(%d)\n",
+        position,
+        (int)iterator->pid,
+        (int)iterator->state
     );
 }
 
@@ -90,11 +92,12 @@ void printPcbArray(PCB* pcbArray) {
     PCB* iterator = pcbArray;
     int i;
     for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
-        fprintf(stderr, "PCB#%.2d: pid(%d), state(%d)\n", 
+        fprintf(stderr, "PCB#%.2d: pid(%.5d), state(%d)\n", 
             i, 
             (int)iterator->pid,
             (int)iterator->state
         );
+        iterator++;
     }
 
 }
@@ -105,12 +108,18 @@ int getIndexOfPid(PCB* pcbArray, pid_t pid) {
         return -1;
     }
 
+    if((int)pid <= 0) {
+        fprintf(stderr, "ERROR: Couldn't fetch index of pid--invalid pid\n");
+        return -1;
+    }
+
     PCB* iterator = pcbArray;
     int i;
     for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
         if(iterator->pid == pid) {
             return i;
         }
+        iterator++;
     }
 
     return -1;

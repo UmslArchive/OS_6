@@ -38,7 +38,7 @@ int areActiveProcesses();
 void killChildren();
 
 //Utility
-void printPcb(PCB* pcbArray, PCB* pcbIterator);
+void printPcb(PCB* pcbArray, int position);
 void printPcbArray(PCB* pcbArray);
 int getIndexOfPid(PCB* pcbArray, pid_t pid);
 

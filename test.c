@@ -152,12 +152,30 @@ void testClockSet() {
 
 void testPcbArrayInit() {
     PCB* pcbArray = (PCB*)malloc(MAX_CHILD_PROCESSES * sizeof(PCB));
+    int i;
 
     //Test label
     printf("PCB Array Tests:\n");
 
     ossInitPcbArray(pcbArray);
 
+    printPcbArray(pcbArray);
+
+    fprintf(stderr, "\n");
+
+    PCB* iterator = pcbArray;
+    for(i = 0; i < 3; ++i) {
+        iterator->pid = i;
+        printPcb(pcbArray, i);
+        iterator++;
+    }
+
+    iterator = pcbArray;
+    iterator += 10;
+    iterator->pid = 1000;
+
+    fprintf(stderr, "\n");
+    
     printPcbArray(pcbArray);
 
     //Test label
