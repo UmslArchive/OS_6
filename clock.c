@@ -71,8 +71,12 @@ int checkIfPassedTime(Clock* mainClock, Clock* timeLimit) {
     if(mainClock->seconds > timeLimit->seconds)
         return 1;
 
-    if(mainClock->seconds == timeLimit->seconds && mainClock->nanoseconds >= timeLimit->nanoseconds)
+    if(mainClock->seconds == timeLimit->seconds && 
+        mainClock->nanoseconds >= timeLimit->nanoseconds)
+    {
         return 1;
+    }
+        
 
     return 0;
 }
