@@ -104,6 +104,18 @@ void removeFromPcbArray(PCB* pcbArray, pid_t pid) {
 }
 
 void killChildren(PCB* pcbArray) {
+    if(pcbArray == NULL) {
+        fprintf(stderr, "ERROR: No children were killed--nullptr\n");
+        return;
+    }
+
+    PCB* iterator = pcbArray;
+    int i;
+    for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
+        if(iterator->state != NULL_PS) {
+            kill(iterator->pid, SIGTERM);
+        }
+    }
 }
 
 //Utility:
