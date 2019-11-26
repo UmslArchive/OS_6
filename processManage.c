@@ -13,43 +13,41 @@ static int numActivePs = 0;
 //Static functions:
 
 static void addToActiveProcesses() {
-    
+
 }
 
 static void removeFromActiveProccesses(pid_t process) {
-
+    //Scan PCB array for pid
 }
 
 int areActiveProcesses() {
     return 0;
 }
 
-static int activeProcessArrayFull(){
-
-}
-
-void printActiveProcessArray() {
-
-}
 
 //Initialization/deallocation:
-
-int initOssProcessManager() {
-    
+void initPcb(PCB* pcbIterator) {
+    pcbIterator->pid = 0;
+    pcbIterator->state = NULL_PS;
 }
 
-int destroyProcessManager() {
+void ossInitPcbArray(PCB* pcbArray) {
+    if(pcbArray == NULL) {
+        fprintf(stderr, "ERROR: PCB Array init--nullptr\n");
+        return;
+    }
 
+    int i;
+    PCB* iterator = pcbArray;
+    for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
+        initPcb(iterator);
+        iterator++;
+    }
 }
-
 
 //oss functions:
 
 int spawnProcess(int* newestChildPid) {
-
-}
-
-int spawnDummyProcess() {
 
 }
 
@@ -69,14 +67,51 @@ void waitNoBlock() {
 void killChildren() {
 }
 
-//Utility
-int getIndexOfPid(pid_t searchPid) {
+//Utility:
+void printPcb(PCB* pcbArray, PCB* pcbIterator) {
+    if(pcbArray == NULL || pcbIterator == NULL) {
+        fprintf(stderr, "ERROR: Couldn't print PCB--nullptr\n");
+        return;
+    }
+
+    fprintf(stderr, "PCB#%.2d: pid(%d), state(%d)\n", 
+        getIndexOfPid(pcbArray, pcbIterator->pid), 
+        (int)pcbIterator->pid,
+        (int)pcbIterator->state
+    );
 }
 
-pid_t getPidOfIndex(int index) {
+void printPcbArray(PCB* pcbArray) {
+    if(pcbArray == NULL) {
+        fprintf(stderr, "ERROR: Couldn't print PCB array--nullptr\n");
+        return;
+    }
+
+    PCB* iterator = pcbArray;
+    int i;
+    for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
+        fprintf(stderr, "PCB#%.2d: pid(%d), state(%d)\n", 
+            i, 
+            (int)iterator->pid,
+            (int)iterator->state
+        );
+    }
+
 }
 
+int getIndexOfPid(PCB* pcbArray, pid_t pid) {
+    if(pcbArray == NULL) {
+        fprintf(stderr, "ERROR: Couldn't fetch index of pid--nullptr\n");
+        return -1;
+    }
 
-int getNumActivePs() {
-    return (int)numActivePs;
+    PCB* iterator = pcbArray;
+    int i;
+    for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
+        if(iterator->pid == pid) {
+            return i;
+        }
+    }
+
+    return -1;
 }

@@ -9,14 +9,17 @@
 //Keys
 const key_t SHM_KEY_SEM = 0x66666666;   
 const key_t SHM_KEY_CLOCK = 0x99999999;
+const key_t SHM_KEY_PCB = 0x77777777;
 
 //IDs
 int shmSemID = 0;
 int shmClockID = 0;
+int shmPcbID = 0;
 
 //Sizes
 const size_t shmSemSize = sizeof(sem_t);
 const size_t shmClockSize = sizeof(Clock);
+const size_t shmPcbSize = MAX_CHILD_PROCESSES * sizeof(PCB);
 
 const int SHM_OSS_FLAGS = IPC_CREAT | IPC_EXCL | 0777;
 const int SHM_USR_FLAGS = 0777;
@@ -69,7 +72,9 @@ void detachAll() {
     if(shmClockID > 0)
         shmdt(&shmClockID);
     if(shmSemID > 0)
-        shmdt(&shmSemID);    
+        shmdt(&shmSemID);
+    if(shmPcbID > 0)
+        shmdt(&shmPcbID);    
 
     //fprintf(stderr, "Child PID %d detached\n", getpid());
 }

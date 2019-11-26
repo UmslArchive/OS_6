@@ -34,9 +34,11 @@ int main(int arg, char* argv[]) {
 
     //Init shared memory pointers
     Clock* shmClockPtr = (Clock*)initSharedMemory(SHM_KEY_CLOCK, shmClockSize, &shmClockID, SHM_OSS_FLAGS);
+    PCB* shmPcbPtr = (PCB*)initSharedMemory(SHM_KEY_PCB, shmPcbSize, &shmPcbID, SHM_OSS_FLAGS);
 
     //Init shared memory values
     initClock(shmClockPtr);
+    ossInitPcbArray(shmPcbPtr);
 
     //Generate first random process spawn time
     Clock spawnTime;

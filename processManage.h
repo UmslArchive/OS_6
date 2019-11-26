@@ -17,9 +17,19 @@
 
 #define MAX_CHILD_PROCESSES 18
 
-//Initialization/deallocation
-int initOssProcessManager();
-int destroyProcessManager();
+typedef enum ps_state_enum {
+    NULL_PS,
+    READY
+} State;
+
+typedef struct pcb_struct {
+    pid_t pid;
+    State state;    
+} PCB;
+
+//Initialization
+void ossInitPcbArray(PCB* pcbArray);
+void initPcb(PCB* pcbIterator);
 
 //oss process management functions:
 int spawnProcess();
@@ -28,9 +38,8 @@ int areActiveProcesses();
 void killChildren();
 
 //Utility
-void printActiveProcessArray();
-int getIndexOfPid(pid_t searchPid);
-pid_t getPidOfIndex(int index);
-int spawnDummyProcess();
+void printPcb(PCB* pcbArray, PCB* pcbIterator);
+void printPcbArray(PCB* pcbArray);
+int getIndexOfPid(PCB* pcbArray, pid_t pid);
 
 #endif

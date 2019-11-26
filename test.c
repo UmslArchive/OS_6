@@ -5,6 +5,7 @@
 void testTimeDifference();
 void testTimeHasPassed();
 void testClockSet();
+void testPcbArrayInit();
 
 //===========================================================
 
@@ -18,6 +19,9 @@ int main() {
     testTimeDifference();
     testTimeHasPassed();
     testClockSet();
+
+    //PCB Tests
+    testPcbArrayInit();
 
     return 0;
 }
@@ -144,4 +148,20 @@ void testClockSet() {
     printClock(&clock);
 
     printf("-----\n");
+}
+
+void testPcbArrayInit() {
+    PCB* pcbArray = (PCB*)malloc(MAX_CHILD_PROCESSES * sizeof(PCB));
+
+    //Test label
+    printf("PCB Array Tests:\n");
+
+    ossInitPcbArray(pcbArray);
+
+    printPcbArray(pcbArray);
+
+    //Test label
+    printf("-----\n");
+
+    free(pcbArray);
 }
