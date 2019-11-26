@@ -76,6 +76,6 @@ int checkIfPassedTime(Clock* mainClock, Clock* timeLimit) {
     {
         return 1;
     }
-        
+    
     return 0;
 }

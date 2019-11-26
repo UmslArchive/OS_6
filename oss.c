@@ -41,11 +41,33 @@ int main(int arg, char* argv[]) {
     Clock spawnTime;
     spawnTime.nanoseconds = rand() % 499999999 + 1;
     spawnTime.seconds = 0;
-    
-    spawnProcess(shmPcbPtr);
-    printPcbArray(shmPcbPtr);
+
+    int spawned1 = 0;
 
     while(1) {
+
+        //Spawn process every 500ms
+        if(checkIfPassedTime(shmClockPtr, &spawnTime) == 1 && spawned1 == 0) {
+            spawnProcess(shmPcbPtr);
+            printPcbArray(shmPcbPtr);
+
+            fprintf(stderr, "\n");
+
+            //spawned1 = 1;
+
+            //Generate next spawn time
+            setClock(&spawnTime,
+                shmClockPtr->seconds,
+                shmClockPtr->nanoseconds);
+            
+            advanceClock(&spawnTime, 0, rand() % 499999999 + 1);
+        }
+
+        //Advance the clock
+        sem_wait(shmSemPtr);
+            advanceClock(shmClockPtr, 0, 1000);
+        sem_post(shmSemPtr);
+
         //Wait on dead child if there is one
         waitNoBlock(shmPcbPtr);
 

@@ -28,7 +28,7 @@ int main(int arg, char* argv[]) {
     while(1) {
         
         //Check if a signal was received
-        if(usrSignalReceivedFlag == 1)
+        if(usrSignalReceivedFlag == 1 || count > 1000000000)
             break;
 
         count++;
