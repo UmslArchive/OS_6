@@ -94,4 +94,7 @@ void cleanupAll() {
 
     if(shmClockID > 0)   
         cleanupSharedMemory(&shmClockID);
+    
+    if(shmPcbID > 0)   
+        cleanupSharedMemory(&shmPcbID);
 }
