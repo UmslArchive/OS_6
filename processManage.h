@@ -32,15 +32,17 @@ void ossInitPcbArray(PCB* pcbArray);
 void initPcb(PCB* pcbIterator);
 
 //oss process management functions:
-int spawnProcess();
-void waitNoBlock();
-int areActiveProcesses();
-void killChildren();
+int spawnProcess(PCB* pcbArray);
+void addToPcbArray(PCB* pcbArray, pid_t pid);
+void waitNoBlock(PCB* pcbArray);
+void removeFromPcbArray(PCB* pcbArray, pid_t pid);
+int areActiveProcesses(PCB* pcbArray);
+void killChildren(PCB* pcbArray);
 
 //Utility
 void printPcb(PCB* pcbArray, int position);
 void printPcbArray(PCB* pcbArray);
 int getIndexOfPid(PCB* pcbArray, pid_t pid);
-int spawnDummyProcess(PCB* pcbArray);
+int spawnDummyProcess(PCB* pcbArray, pid_t pid);
 
 #endif

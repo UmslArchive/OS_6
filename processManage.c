@@ -30,18 +30,9 @@ static PCB* scanForEmptyPcbSlot(PCB* pcbArray) {
     return NULL;
 }
 
-int areActiveProcesses() {
+int areActiveProcesses(PCB* pcbArray) {
     return 0;
 }
-
-static void addProcessToPcbArray(PCB* pcbArray, pid_t pid) {
-
-}
-
-static void removeFromActiveProccesses(pid_t process) {
-    //Scan PCB array for pid
-}
-
 
 //Initialization/deallocation:
 void initPcb(PCB* pcbIterator) {
@@ -65,24 +56,54 @@ void ossInitPcbArray(PCB* pcbArray) {
 
 //oss functions:
 
-int spawnProcess(int* newestChildPid) {
+int spawnProcess(PCB* pcbArray) {
 
 }
 
-void waitNoBlock() {
+void addToPcbArray(PCB* pcbArray, pid_t pid) {
+
+}
+
+void waitNoBlock(PCB* pcbArray) {
     while((pid = waitpid(-1, &exitStatus, WNOHANG))) {
         if((pid == -1) && (errno != EINTR))
             break;
         else {
             //fprintf(stderr, "PID %d exited w/ status %d\n", pid, WEXITSTATUS(exitStatus));
-            removeFromActiveProccesses(pid);
-            --numActivePs;
-            //printActiveProcessArray();
+            removeFromPcbArray(pcbArray, pid);
         }
     }
 }
 
-void killChildren() {
+void removeFromPcbArray(PCB* pcbArray, pid_t pid) {
+    if(pcbArray == NULL) {
+        fprintf(stderr, "ERROR: Couldn't remove ps from PCB Array--nullptr\n");
+        return;
+    }
+
+    if(pid <= 0) {
+        fprintf(stderr, "ERROR: Couldn't remove ps from PCB Array--Invalid PID\n");
+        return;
+    }
+
+
+    //Scan PCB array for pid
+    PCB* iterator = pcbArray;
+    int i;
+    for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
+        if(iterator->pid == pid) {
+            iterator->state = NULL_PS;
+            iterator->pid = 0;
+            return;
+        }
+        iterator++;
+    }
+
+    fprintf(stderr, "PID %d not found in PCB Array--No Remove\n", (int)pid);
+    return;
+}
+
+void killChildren(PCB* pcbArray) {
 }
 
 //Utility:
@@ -143,7 +164,7 @@ int getIndexOfPid(PCB* pcbArray, pid_t pid) {
     return -1;
 }
 
-int spawnDummyProcess(PCB* pcbArray) {
+int spawnDummyProcess(PCB* pcbArray, pid_t pid) {
     if(pcbArray == NULL) {
         fprintf(stderr, "ERROR: Couldn't spawn dummy--nullptr\n");
         return -1;
@@ -156,5 +177,5 @@ int spawnDummyProcess(PCB* pcbArray) {
     }
 
     iterator->state = READY;
-    iterator->pid = rand() % 99999;
+    iterator->pid = pid;
 }

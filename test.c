@@ -196,10 +196,14 @@ void testProcessSpawnDespawn() {
     printf("Process Spawn/Despawn Tests:\n");
 
     for(i = 0; i < 10; ++i) {
-        spawnDummyProcess(pcbArray);
+        spawnDummyProcess(pcbArray, i + 1);
     }
 
+    removeFromPcbArray(pcbArray, 8);
+
     printPcbArray(pcbArray);
+
+    removeFromPcbArray(pcbArray, 20);
 
 
     free(pcbArray);
