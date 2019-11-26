@@ -30,6 +30,8 @@ int main(int arg, char* argv[]) {
         //Check if a signal was received
         if(usrSignalReceivedFlag == 1)
             break;
+
+        count++;
     }
 
     detachAll();

@@ -30,7 +30,39 @@ static PCB* scanForEmptyPcbSlot(PCB* pcbArray) {
     return NULL;
 }
 
+static int pcbArrayFull(PCB* pcbArray) {
+    if(pcbArray == NULL) {
+        fprintf(stderr, "ERROR: Couldn't check if full--nullptr\n");
+        return -1;
+    }
+
+    PCB* iterator = pcbArray;
+    int i;
+    for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
+        if(iterator->state == NULL_PS) {
+            return 0;
+        }
+        iterator++;
+    }
+
+    return 1;
+}
+
 int areActiveProcesses(PCB* pcbArray) {
+    if(pcbArray == NULL) {
+        fprintf(stderr, "ERROR: Couldn't check for processes--nullptr\n");
+        return -1;
+    }
+
+    PCB* iterator = pcbArray;
+    int i;
+    for(i = 0;i < MAX_CHILD_PROCESSES; ++i) {
+        if(iterator->state == READY) {
+            return 1;
+        }
+        iterator++;
+    }
+
     return 0;
 }
 
@@ -58,10 +90,50 @@ void ossInitPcbArray(PCB* pcbArray) {
 
 int spawnProcess(PCB* pcbArray) {
 
+    if(pcbArrayFull(pcbArray) == 1) {
+        return 0;
+    }
+
+    pid = fork();
+
+    //Error
+    if(pid < 0) {
+        fprintf(stderr, "ERROR: Fork\n");
+        return -1;
+    }
+
+    //Child
+    if(pid == 0) {
+        execl("./usr", "usr", (char*) NULL);
+    }
+
+    addToPcbArray(pcbArray, pid);
+    pid = 0;
+
+    return 1;
 }
 
 void addToPcbArray(PCB* pcbArray, pid_t pid) {
+    if(pcbArray == NULL) {
+        fprintf(stderr, "ERROR: Couldn't add ps to PCB Array--nullptr\n");
+        return;
+    }
 
+    if(pid <= 0) {
+        fprintf(stderr, "ERROR: Couldn't add ps to PCB Array--Invalid PID\n");
+        return;
+    }
+
+
+    //Scan PCB array for empty slot
+    PCB* iterator = scanForEmptyPcbSlot(pcbArray);
+    if(iterator == NULL) {
+        fprintf(stderr, "Couldn't add ps to PCB Array--No Empty\n");
+        return;
+    }
+
+    iterator->pid = pid;
+    iterator->state = READY;
 }
 
 void waitNoBlock(PCB* pcbArray) {
@@ -115,6 +187,7 @@ void killChildren(PCB* pcbArray) {
         if(iterator->state != NULL_PS) {
             kill(iterator->pid, SIGTERM);
         }
+        iterator++;
     }
 }
 

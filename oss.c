@@ -21,9 +21,6 @@ int main(int arg, char* argv[]) {
     sigaction(SIGALRM, &ossSigAction, 0);
     sigaction(SIGTERM, &ossSigAction, 0);
 
-    //Init Managers
-    initOssProcessManager();
-
     //Init semaphore
     sem_t* shmSemPtr = initShmSemaphore(SHM_KEY_SEM, shmSemSize, &shmSemID, SHM_OSS_FLAGS);
     if(sem_init(shmSemPtr, 1, 1) == -1) {
@@ -44,24 +41,27 @@ int main(int arg, char* argv[]) {
     Clock spawnTime;
     spawnTime.nanoseconds = rand() % 499999999 + 1;
     spawnTime.seconds = 0;
-  
-    while(1) {
+    
+    spawnProcess(shmPcbPtr);
+    printPcbArray(shmPcbPtr);
 
+    while(1) {
         //Wait on dead child if there is one
-        waitNoBlock();
+        waitNoBlock(shmPcbPtr);
 
         //Check if a signal was received
         if(ossSignalReceivedFlag == 1) {
-            killChildren();
+            killChildren(shmPcbPtr);
             break;
         }
     }
 
     //Wait on remaining processes
-    while(areActiveProcesses() == 1)
-        waitNoBlock();
+    while(areActiveProcesses(shmPcbPtr) == 1)
+        waitNoBlock(shmPcbPtr);
+
+    printPcbArray(shmPcbPtr);
 
     //Cleanup
-    destroyProcessManager();
     cleanupAll();
 }

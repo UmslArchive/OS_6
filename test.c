@@ -201,9 +201,12 @@ void testProcessSpawnDespawn() {
 
     removeFromPcbArray(pcbArray, 8);
 
-    printPcbArray(pcbArray);
-
     removeFromPcbArray(pcbArray, 20);
+
+    addToPcbArray(pcbArray, 50);
+    addToPcbArray(pcbArray, 500);
+
+    printPcbArray(pcbArray);
 
 
     free(pcbArray);
