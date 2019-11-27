@@ -24,11 +24,14 @@ int main(int arg, char* argv[]) {
     Clock* shmClockPtr = (Clock*)initSharedMemory(SHM_KEY_CLOCK, shmClockSize, &shmClockID, SHM_USR_FLAGS);
     PCB* shmPcbPtr = (PCB*)initSharedMemory(SHM_KEY_PCB, shmPcbSize, &shmPcbID, SHM_USR_FLAGS);
 
+    //Init message queue
+    usrInitMessageQueue();
+
     int count = 0;
     while(1) {
         
         //Check if a signal was received
-        if(usrSignalReceivedFlag == 1 || count > 1000000000)
+        if(usrSignalReceivedFlag == 1)
             break;
 
         count++;

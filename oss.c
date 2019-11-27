@@ -37,6 +37,9 @@ int main(int arg, char* argv[]) {
     initClock(shmClockPtr);
     ossInitPcbArray(shmPcbPtr);
 
+    //Message Queue init
+    ossInitMessageQueue();
+
     //Generate first random process spawn time
     Clock spawnTime;
     spawnTime.nanoseconds = rand() % 499999999 + 1;
@@ -44,7 +47,9 @@ int main(int arg, char* argv[]) {
 
     int spawned1 = 0;
 
-    while(1) {
+    sendMessage(rand() % 10 + 1, "hello msg");
+
+    /* while(1) {
 
         //Spawn process every 500ms
         if(checkIfPassedTime(shmClockPtr, &spawnTime) == 1 && spawned1 == 0) {
@@ -65,7 +70,7 @@ int main(int arg, char* argv[]) {
 
         //Advance the clock
         sem_wait(shmSemPtr);
-            advanceClock(shmClockPtr, 0, 1000);
+            advanceClock(shmClockPtr, 0, 50);
         sem_post(shmSemPtr);
 
         //Wait on dead child if there is one
@@ -76,14 +81,15 @@ int main(int arg, char* argv[]) {
             killChildren(shmPcbPtr);
             break;
         }
-    }
+    } */
 
     //Wait on remaining processes
     while(areActiveProcesses(shmPcbPtr) == 1)
         waitNoBlock(shmPcbPtr);
 
-    printPcbArray(shmPcbPtr);
+    //printPcbArray(shmPcbPtr);
 
     //Cleanup
     cleanupAll();
+    destroyMessageQueue();
 }
