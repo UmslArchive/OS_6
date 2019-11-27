@@ -18,7 +18,7 @@ struct sigaction usrSigAction;
 void ossSignalHandler(int signal) {
     switch(signal) {
         case SIGINT:
-            fprintf(stderr, "OSS caught SIGINT signal\n");
+            fprintf(stderr, "\nOSS caught SIGINT signal\n");
             ossSignalReceivedFlag = 1;
             break;
 
