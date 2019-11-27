@@ -36,12 +36,18 @@ void sendMessage(long type, const char* text) {
     newMsg.msgType = type;
 
     int len = strlen(text) + 1;
-    fprintf(stderr, "len = %d\n", len);
+    //fprintf(stderr, "len = %d\n", len);
 
     memcpy((char*)newMsg.msgText, (char*)text, len);
 
-    int i;
-    for(i = 0; i < len; ++i) {
-        fprintf(stderr, "%c", newMsg.msgText[i]);
+    msgsnd(msgID, &newMsg, len, 0);
+}
+
+void receiveMessage() {
+    struct Msg rcvMsg;
+    int success = msgrcv(msgID, &rcvMsg, sizeof(rcvMsg.msgText), 0, IPC_NOWAIT);
+    if(success != -1) {
+        fprintf(stderr, "oss received msg: %s (%ld)\n", rcvMsg.msgText, rcvMsg.msgType);
     }
+    
 }

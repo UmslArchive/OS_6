@@ -47,14 +47,15 @@ int main(int arg, char* argv[]) {
 
     int spawned1 = 0;
 
-    sendMessage(rand() % 10 + 1, "hello msg");
+    while(1) {
 
-    /* while(1) {
+        receiveMessage();
 
         //Spawn process every 500ms
         if(checkIfPassedTime(shmClockPtr, &spawnTime) == 1 && spawned1 == 0) {
+            printClock(shmClockPtr);
             spawnProcess(shmPcbPtr);
-            printPcbArray(shmPcbPtr);
+            //printPcbArray(shmPcbPtr);
 
             fprintf(stderr, "\n");
 
@@ -70,7 +71,7 @@ int main(int arg, char* argv[]) {
 
         //Advance the clock
         sem_wait(shmSemPtr);
-            advanceClock(shmClockPtr, 0, 50);
+            advanceClock(shmClockPtr, 0, 250);
         sem_post(shmSemPtr);
 
         //Wait on dead child if there is one
@@ -81,7 +82,7 @@ int main(int arg, char* argv[]) {
             killChildren(shmPcbPtr);
             break;
         }
-    } */
+    }
 
     //Wait on remaining processes
     while(areActiveProcesses(shmPcbPtr) == 1)

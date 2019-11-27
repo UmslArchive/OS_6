@@ -10,6 +10,7 @@
 int main(int arg, char* argv[]) {
 
     //Initializations:
+    fprintf(stderr, "NEW PS\n");
 
     //Seed rand
     srand(time(NULL));
@@ -27,8 +28,34 @@ int main(int arg, char* argv[]) {
     //Init message queue
     usrInitMessageQueue();
 
+    //Generate first random process spawn time
+    Clock reqTime;
+    reqTime.nanoseconds = 0;
+    reqTime.seconds = 0;
+
     int count = 0;
+
+    //Create message string
+    char msgBuff[100];
+    sprintf(msgBuff, "%d hello msg", getpid());
     while(1) {
+        //Spawn process every 500ms
+        if(checkIfPassedTime(shmClockPtr, &reqTime) == 1) {
+            printClock(shmClockPtr);
+            sendMessage(rand() % 10 + 1, msgBuff);
+            //printPcbArray(shmPcbPtr);
+
+            fprintf(stderr, "\n");
+
+            //spawned1 = 1;
+
+            //Generate next spawn time
+            setClock(&reqTime,
+                shmClockPtr->seconds,
+                shmClockPtr->nanoseconds);
+            
+            advanceClock(&reqTime, 0, rand() % 499999999 + 1);
+        }
         
         //Check if a signal was received
         if(usrSignalReceivedFlag == 1)

@@ -32,4 +32,5 @@ void ossInitMessageQueue();
 void usrInitMessageQueue();
 void destroyMessageQueue();
 void sendMessage(long type, const char* text);
+void receiveMessage();
 #endif
