@@ -7,6 +7,8 @@
 #include "interrupts.h"
 #include "shared.h"
 
+#define TICK_RATE 10
+
 int main(int arg, char* argv[]) {
     int i, j, k;
     
@@ -45,33 +47,26 @@ int main(int arg, char* argv[]) {
     spawnTime.nanoseconds = rand() % 499999999 + 1;
     spawnTime.seconds = 0;
 
-    int spawned1 = 0;
-
     while(1) {
 
         receiveMessage();
 
         //Spawn process every 500ms
-        if(checkIfPassedTime(shmClockPtr, &spawnTime) == 1 && spawned1 == 0) {
+        if(checkIfPassedTime(shmClockPtr, &spawnTime)) {
             printClock(shmClockPtr);
+
             spawnProcess(shmPcbPtr);
-            //printPcbArray(shmPcbPtr);
-
-            fprintf(stderr, "\n");
-
-            //spawned1 = 1;
 
             //Generate next spawn time
             setClock(&spawnTime,
                 shmClockPtr->seconds,
                 shmClockPtr->nanoseconds);
-            
             advanceClock(&spawnTime, 0, rand() % 499999999 + 1);
         }
 
         //Advance the clock
         sem_wait(shmSemPtr);
-            advanceClock(shmClockPtr, 0, 250);
+            advanceClock(shmClockPtr, 0, TICK_RATE);
         sem_post(shmSemPtr);
 
         //Wait on dead child if there is one
