@@ -89,10 +89,8 @@ void cleanupSharedMemory(int* shmid) {
 void cleanupAll() {
     if(shmSemID > 0)
         cleanupSharedMemory(&shmSemID);
-
     if(shmClockID > 0)   
         cleanupSharedMemory(&shmClockID);
-    
     if(shmPcbID > 0)   
         cleanupSharedMemory(&shmPcbID);
 
