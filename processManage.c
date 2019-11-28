@@ -77,8 +77,8 @@ void ossInitPcbArray(PCB* pcbArray) {
         return;
     }
 
-    int i;
     PCB* iterator = pcbArray;
+    int i;
     for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
         initPcb(iterator);
         iterator++;
