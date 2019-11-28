@@ -48,7 +48,11 @@ void ossReceiveMessage() {
     struct Msg rcvMsg;
     int success = msgrcv(msgID, &rcvMsg, sizeof(rcvMsg.msgText), 100000, IPC_NOWAIT);
     if(success != -1) {
-        fprintf(stderr, "OSS received msg: %s type(%ld)\n", rcvMsg.msgText, rcvMsg.msgType);
+        fprintf (
+            stderr, 
+            "OSS received msg: %s type(%ld)\n", 
+            rcvMsg.msgText, rcvMsg.msgType
+        );
     }    
 }
 
@@ -64,6 +68,10 @@ void usrReceiveMessage(long pid) {
     struct Msg rcvMsg;
     int success = msgrcv(msgID, &rcvMsg, sizeof(rcvMsg.msgText), pid, IPC_NOWAIT);
     if(success != -1) {
-        fprintf(stderr, "USR %ld received msg: %s type(%ld)\n", pid, rcvMsg.msgText, rcvMsg.msgType);
+        fprintf (
+            stderr,
+            "USR %ld received msg: %s type(%ld)\n",
+            pid, rcvMsg.msgText, rcvMsg.msgType
+        );
     }
 }
