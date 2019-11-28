@@ -83,5 +83,5 @@ int main(int arg, char* argv[]) {
 
     detachAll();
 
-    return 50;
+    return 0;
 }
