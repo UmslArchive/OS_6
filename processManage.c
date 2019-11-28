@@ -8,7 +8,6 @@
 
 static pid_t pid = 0;
 static int exitStatus = 0;
-static int numActivePs = 0;
 
 //Static functions:
 
@@ -141,10 +140,8 @@ void waitNoBlock(PCB* pcbArray) {
         if((pid == -1) && (errno != EINTR))
             break;
         else {
-            //fprintf(stderr, "PID %d exited w/ status %d\n", pid, WEXITSTATUS(exitStatus));
+            fprintf(stderr, "PID %d exited w/ status %d\n", pid, WEXITSTATUS(exitStatus));
             removeFromPcbArray(pcbArray, pid);
-            //printPcbArray(pcbArray);
-            fprintf(stderr, "\n");
         }
     }
 }
