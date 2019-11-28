@@ -15,8 +15,6 @@ int main(int arg, char* argv[]) {
     int i, j, k;
     PCB* pcbIter;
     
-    //Initializations:
-    
     //Seed rand
     srand(time(NULL));
 
@@ -71,6 +69,8 @@ int main(int arg, char* argv[]) {
     spawnTime.nanoseconds = rand() % 499999999 + 1;
     spawnTime.seconds = 0;
 
+    //-----
+
     while(!ossSignalReceivedFlag) {
 
         ossReceiveMessage();
@@ -105,6 +105,8 @@ int main(int arg, char* argv[]) {
         //Wait on dead child if there is one
         waitNoBlock(shmPcbPtr);
     }
+
+    //-----
 
     //Signal too all child processes to finish up
     killChildren(shmPcbPtr);

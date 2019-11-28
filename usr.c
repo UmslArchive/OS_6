@@ -9,8 +9,6 @@
 
 int main(int arg, char* argv[]) {
 
-    //Initializations:
-
     //Seed rand
     srand(time(NULL));
 
@@ -60,6 +58,8 @@ int main(int arg, char* argv[]) {
     char msgBuff[100];
     sprintf(msgBuff, "\"usr %d says hello\"", getpid());
 
+    //-----
+
     while(!usrSignalReceivedFlag) {
 
         usrReceiveMessage((long)getpid());
@@ -79,7 +79,9 @@ int main(int arg, char* argv[]) {
         }
     }
 
+    //-----
+
     detachAll();
-    //fprintf(stderr, "DEATH %d\n", getpid());
+    
     return 50;
 }
