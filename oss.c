@@ -7,10 +7,13 @@
 #include "interrupts.h"
 #include "shared.h"
 
-#define TICK_RATE 10
+#define TICK_RATE 1000
 
 int main(int arg, char* argv[]) {
+
+    //Counters and iterators
     int i, j, k;
+    PCB* pcbIter;
     
     //Initializations:
     
@@ -49,18 +52,26 @@ int main(int arg, char* argv[]) {
 
     while(1) {
 
-        receiveMessage();
+        ossReceiveMessage();
 
         //Spawn process every 500ms
         if(checkIfPassedTime(shmClockPtr, &spawnTime)) {
-            printClock(shmClockPtr);
-
             spawnProcess(shmPcbPtr);
 
+            pcbIter = shmPcbPtr;
+            for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
+                if(pcbIter->state != NULL_PS) {
+                    ossSendMessage(pcbIter->pid, "\"oss says hello\"");
+                    pcbIter++;
+                }
+            }
+
             //Generate next spawn time
-            setClock(&spawnTime,
+            setClock (
+                &spawnTime,
                 shmClockPtr->seconds,
-                shmClockPtr->nanoseconds);
+                shmClockPtr->nanoseconds
+            );
             advanceClock(&spawnTime, 0, rand() % 499999999 + 1);
         }
 

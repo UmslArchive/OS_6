@@ -31,6 +31,10 @@ extern const int MSG_USR_FLAGS;
 void ossInitMessageQueue();
 void usrInitMessageQueue();
 void destroyMessageQueue();
-void sendMessage(long type, const char* text);
-void receiveMessage();
+
+void ossSendMessage(long pid, const char* text);
+void ossReceiveMessage();
+void usrSendMessage(const char* text);
+void usrReceiveMessage();
+
 #endif

@@ -24,6 +24,10 @@ int main(int arg, char* argv[]) {
     Clock* shmClockPtr = (Clock*)initSharedMemory(SHM_KEY_CLOCK, shmClockSize, &shmClockID, SHM_USR_FLAGS);
     PCB* shmPcbPtr = (PCB*)initSharedMemory(SHM_KEY_PCB, shmPcbSize, &shmPcbID, SHM_USR_FLAGS);
 
+    //Get PCB index and iterator
+    int pcbIndex = getIndexOfPid(shmPcbPtr, getpid());
+    PCB* pcbIterator = shmPcbPtr + pcbIndex;
+
     //Init message queue
     usrInitMessageQueue();
 
@@ -34,25 +38,23 @@ int main(int arg, char* argv[]) {
 
     //Create message string
     char msgBuff[100];
-    sprintf(msgBuff, "%d hello msg", getpid());
+    sprintf(msgBuff, "\"usr %d says hello\"", getpid());
 
     while(1) {
+
+        usrReceiveMessage((long)getpid());
+
         //Spawn process every 500ms
         if(checkIfPassedTime(shmClockPtr, &reqTime) == 1) {
-
-            printClock(shmClockPtr);
-            sendMessage(rand() % 10 + 1, msgBuff);
-            //printPcbArray(shmPcbPtr);
-
-            fprintf(stderr, "\n");
-
-            //spawned1 = 1;
-
-            //Generate next spawn time
-            setClock(&reqTime,
-                shmClockPtr->seconds,
-                shmClockPtr->nanoseconds);
             
+            usrSendMessage(msgBuff);
+
+            //Generate next request time
+            setClock (
+                &reqTime,
+                shmClockPtr->seconds,
+                shmClockPtr->nanoseconds
+            );
             advanceClock(&reqTime, 0, rand() % 499999999 + 1);
         }
         

@@ -30,24 +30,34 @@ void destroyMessageQueue() {
     msgctl(msgID, IPC_RMID, NULL);
 }
 
-void sendMessage(long type, const char* text) {
+void ossSendMessage(long pid, const char* text) {
     struct Msg newMsg;
-
-    newMsg.msgType = type;
-
     int len = strlen(text) + 1;
-    //fprintf(stderr, "len = %d\n", len);
-
+    newMsg.msgType = pid;
     memcpy((char*)newMsg.msgText, (char*)text, len);
-
     msgsnd(msgID, &newMsg, len, 0);
 }
 
-void receiveMessage() {
+void ossReceiveMessage() {
     struct Msg rcvMsg;
-    int success = msgrcv(msgID, &rcvMsg, sizeof(rcvMsg.msgText), 0, IPC_NOWAIT);
+    int success = msgrcv(msgID, &rcvMsg, sizeof(rcvMsg.msgText), 100000, IPC_NOWAIT);
     if(success != -1) {
-        fprintf(stderr, "oss received msg: %s (%ld)\n", rcvMsg.msgText, rcvMsg.msgType);
+        fprintf(stderr, "OSS received msg: %s type(%ld)\n", rcvMsg.msgText, rcvMsg.msgType);
+    }    
+}
+
+void usrSendMessage(const char* text) {
+    struct Msg newMsg;
+    newMsg.msgType = 100000;
+    int len = strlen(text) + 1;
+    memcpy((char*)newMsg.msgText, (char*)text, len);
+    msgsnd(msgID, &newMsg, len, 0);
+}
+
+void usrReceiveMessage(long pid) {
+    struct Msg rcvMsg;
+    int success = msgrcv(msgID, &rcvMsg, sizeof(rcvMsg.msgText), pid, IPC_NOWAIT);
+    if(success != -1) {
+        fprintf(stderr, "USR %ld received msg: %s type(%ld)\n", pid, rcvMsg.msgText, rcvMsg.msgType);
     }
-    
 }
