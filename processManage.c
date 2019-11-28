@@ -66,6 +66,7 @@ int areActiveProcesses(PCB* pcbArray) {
 }
 
 //Initialization/deallocation:
+
 void initPcb(PCB* pcbIterator) {
     pcbIterator->pid = 0;
     pcbIterator->state = NULL_PS;
@@ -122,8 +123,6 @@ void addToPcbArray(PCB* pcbArray, pid_t pid) {
         return;
     }
 
-
-    //Scan PCB array for empty slot
     PCB* iterator = scanForEmptyPcbSlot(pcbArray);
     if(iterator == NULL) {
         fprintf(stderr, "Couldn't add ps to PCB Array--No Empty\n");
@@ -159,7 +158,6 @@ void removeFromPcbArray(PCB* pcbArray, pid_t pid) {
         fprintf(stderr, "ERROR: Couldn't remove ps from PCB Array--Invalid PID\n");
         return;
     }
-
 
     //Scan PCB array for pid
     PCB* iterator = pcbArray;
