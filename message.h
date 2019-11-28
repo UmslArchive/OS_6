@@ -22,16 +22,19 @@ struct Msg {
     char msgText[MAX_MSG_LEN];
 };
 
+//Shared memory vars
 extern const key_t msgKey;
 extern int msgID;
 extern const size_t msgSize;
 extern const int MSG_OSS_FLAGS;
 extern const int MSG_USR_FLAGS;
 
+//Inits and destroys
 void ossInitMessageQueue();
 void usrInitMessageQueue();
 void destroyMessageQueue();
 
+//Send/Receive
 void ossSendMessage(long pid, const char* text);
 void ossReceiveMessage();
 void usrSendMessage(const char* text);

@@ -58,6 +58,7 @@ int main(int arg, char* argv[]) {
         if(checkIfPassedTime(shmClockPtr, &spawnTime)) {
             spawnProcess(shmPcbPtr);
 
+            //Send message to all children
             pcbIter = shmPcbPtr;
             for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
                 if(pcbIter->state != NULL_PS) {
