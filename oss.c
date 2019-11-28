@@ -7,7 +7,7 @@
 #include "interrupts.h"
 #include "shared.h"
 
-#define TICK_RATE 1000
+#define TICK_RATE 1000 //nanoseconds
 
 int main(int arg, char* argv[]) {
 
