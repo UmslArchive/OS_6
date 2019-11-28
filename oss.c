@@ -26,17 +26,38 @@ int main(int arg, char* argv[]) {
     sigaction(SIGALRM, &ossSigAction, 0);
     sigaction(SIGTERM, &ossSigAction, 0);
 
+    //Get semaphore pointer
+    sem_t* shmSemPtr = 
+        initShmSemaphore (
+            SHM_KEY_SEM, 
+            shmSemSize, 
+            &shmSemID, 
+            SHM_OSS_FLAGS
+        );
+    
     //Init semaphore
-    sem_t* shmSemPtr = initShmSemaphore(SHM_KEY_SEM, shmSemSize, &shmSemID, SHM_OSS_FLAGS);
     if(sem_init(shmSemPtr, 1, 1) == -1) {
         perror("ERROR:sem_init failed");
         cleanupAll();
         exit(1);
     }
 
-    //Init shared memory pointers
-    Clock* shmClockPtr = (Clock*)initSharedMemory(SHM_KEY_CLOCK, shmClockSize, &shmClockID, SHM_OSS_FLAGS);
-    PCB* shmPcbPtr = (PCB*)initSharedMemory(SHM_KEY_PCB, shmPcbSize, &shmPcbID, SHM_OSS_FLAGS);
+    //Get shared memory pointers
+    Clock* shmClockPtr = 
+        (Clock*)initSharedMemory (
+            SHM_KEY_CLOCK, 
+            shmClockSize, 
+            &shmClockID, 
+            SHM_OSS_FLAGS
+        );
+
+    PCB* shmPcbPtr = 
+        (PCB*)initSharedMemory (
+            SHM_KEY_PCB, 
+            shmPcbSize, 
+            &shmPcbID, 
+            SHM_OSS_FLAGS
+        );
 
     //Init shared memory values
     initClock(shmClockPtr);
