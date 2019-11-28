@@ -92,9 +92,6 @@ int main(int arg, char* argv[]) {
     while(areActiveProcesses(shmPcbPtr) == 1)
         waitNoBlock(shmPcbPtr);
 
-    //printPcbArray(shmPcbPtr);
-
-    //Cleanup
+    //Cleanup shared memory and message queue
     cleanupAll();
-    destroyMessageQueue();
 }

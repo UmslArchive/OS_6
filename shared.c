@@ -75,8 +75,6 @@ void detachAll() {
         shmdt(&shmSemID);
     if(shmPcbID > 0)
         shmdt(&shmPcbID);    
-
-    //fprintf(stderr, "Child PID %d detached\n", getpid());
 }
 
 void cleanupSharedMemory(int* shmid) {
@@ -97,4 +95,6 @@ void cleanupAll() {
     
     if(shmPcbID > 0)   
         cleanupSharedMemory(&shmPcbID);
+
+    destroyMessageQueue();
 }

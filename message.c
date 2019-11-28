@@ -30,7 +30,8 @@ void usrInitMessageQueue() {
 }
 
 void destroyMessageQueue() {
-    msgctl(msgID, IPC_RMID, NULL);
+    if(msgID > 0)
+        msgctl(msgID, IPC_RMID, NULL);
 }
 
 //Send/receive:
