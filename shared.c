@@ -21,8 +21,11 @@ const size_t shmSemSize = sizeof(sem_t);
 const size_t shmClockSize = sizeof(Clock);
 const size_t shmPcbSize = MAX_CHILD_PROCESSES * sizeof(PCB);
 
+//Flags
 const int SHM_OSS_FLAGS = IPC_CREAT | IPC_EXCL | 0777;
 const int SHM_USR_FLAGS = 0777;
+
+//-----
 
 sem_t* initShmSemaphore(const key_t key, const size_t size, int* shmid, int flags) {
     //Allocate shared memory and get an id
