@@ -46,7 +46,7 @@ int main(int arg, char* argv[]) {
     int pcbIndex = getIndexOfPid(shmPcbPtr, getpid());
     PCB* pcbIterator = shmPcbPtr + pcbIndex;
 
-    //Init message queue
+    //Connect message queue
     usrInitMessageQueue();
 
     //Clock which dictates request times
@@ -64,7 +64,7 @@ int main(int arg, char* argv[]) {
 
         usrReceiveMessage((long)getpid());
 
-        //Spawn process every 500ms
+        //Send request if it is time
         if(checkIfPassedTime(shmClockPtr, &reqTime) == 1) {
             
             usrSendMessage(msgBuff);
@@ -82,6 +82,6 @@ int main(int arg, char* argv[]) {
     //-----
 
     detachAll();
-    
+
     return 50;
 }
