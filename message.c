@@ -6,11 +6,14 @@
 
 #include "message.h"
 
+//Shared memory vars
 const key_t msgKey = 0x11111111;
 int msgID = 0;
 const size_t msgSize = sizeof(struct Msg) - sizeof(long);
 const int MSG_OSS_FLAGS = 0666 | IPC_CREAT;
 const int MSG_USR_FLAGS = 0666;
+
+//Inits/destroys:
 
 void ossInitMessageQueue() {
     msgID = msgget(msgKey, MSG_OSS_FLAGS);
@@ -29,6 +32,8 @@ void usrInitMessageQueue() {
 void destroyMessageQueue() {
     msgctl(msgID, IPC_RMID, NULL);
 }
+
+//Send/receive:
 
 void ossSendMessage(long pid, const char* text) {
     struct Msg newMsg;

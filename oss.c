@@ -42,10 +42,10 @@ int main(int arg, char* argv[]) {
     initClock(shmClockPtr);
     ossInitPcbArray(shmPcbPtr);
 
-    //Message Queue init
+    //Message queue init
     ossInitMessageQueue();
 
-    //Generate first random process spawn time
+    //Generate first process random spawn time
     Clock spawnTime;
     spawnTime.nanoseconds = rand() % 499999999 + 1;
     spawnTime.seconds = 0;
