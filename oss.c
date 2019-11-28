@@ -50,7 +50,7 @@ int main(int arg, char* argv[]) {
     spawnTime.nanoseconds = rand() % 499999999 + 1;
     spawnTime.seconds = 0;
 
-    while(1) {
+    while(!ossSignalReceivedFlag) {
 
         ossReceiveMessage();
 
@@ -82,13 +82,10 @@ int main(int arg, char* argv[]) {
 
         //Wait on dead child if there is one
         waitNoBlock(shmPcbPtr);
-
-        //Check if a signal was received
-        if(ossSignalReceivedFlag == 1) {
-            killChildren(shmPcbPtr);
-            break;
-        }
     }
+
+    //Signal too all child processes to finish up
+    killChildren(shmPcbPtr);
 
     //Wait on remaining processes
     while(areActiveProcesses(shmPcbPtr) == 1)

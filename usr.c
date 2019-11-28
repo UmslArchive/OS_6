@@ -40,7 +40,7 @@ int main(int arg, char* argv[]) {
     char msgBuff[100];
     sprintf(msgBuff, "\"usr %d says hello\"", getpid());
 
-    while(1) {
+    while(!usrSignalReceivedFlag) {
 
         usrReceiveMessage((long)getpid());
 
@@ -57,10 +57,6 @@ int main(int arg, char* argv[]) {
             );
             advanceClock(&reqTime, 0, rand() % 499999999 + 1);
         }
-        
-        //Check if a signal was received
-        if(usrSignalReceivedFlag == 1)
-            break;
     }
 
     detachAll();
