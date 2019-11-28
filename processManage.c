@@ -88,7 +88,6 @@ void ossInitPcbArray(PCB* pcbArray) {
 //oss functions:
 
 int spawnProcess(PCB* pcbArray) {
-
     if(pcbArrayFull(pcbArray) == 1) {
         return 0;
     }
