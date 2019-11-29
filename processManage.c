@@ -89,11 +89,17 @@ void ossInitPcbArray(PCB* pcbArray) {
 //oss functions:
 
 int spawnProcess(PCB* pcbArray) {
+
     if(pcbArrayFull(pcbArray) == 1) {
         return 0;
     }
 
     pid = fork();
+
+    //This 
+    int randSeedOffset = rand() % 100;
+    char rso[5];
+    sprintf(rso, "%d", randSeedOffset);
 
     //Error
     if(pid < 0) {
@@ -103,7 +109,7 @@ int spawnProcess(PCB* pcbArray) {
 
     //Child
     if(pid == 0) {
-        execl("./usr", "usr", (char*) NULL);
+        execl("./usr", "usr", rso, (char*) NULL);
     }
 
     addToPcbArray(pcbArray, pid);

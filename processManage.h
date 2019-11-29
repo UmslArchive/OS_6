@@ -21,7 +21,8 @@
 typedef enum ps_state_enum {
     NULL_PS,
     INITIALIZING,
-    READY
+    READY,
+    WAITING
 } State;
 
 typedef struct pcb_struct {

@@ -7,7 +7,7 @@
 #include "interrupts.h"
 #include "shared.h"
 
-#define TICK_RATE 50 //nanoseconds
+#define TICK_RATE 10000 //nanoseconds
 
 int main(int arg, char* argv[]) {
 
@@ -82,8 +82,8 @@ int main(int arg, char* argv[]) {
             //Send message to all children
             pcbIter = shmPcbPtr;
             for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
-                if(pcbIter->state == READY) {
-                    ossSendMessage(pcbIter->pid, "\"oss says hello\"");
+                if(pcbIter->state == WAITING) {
+                    ossSendMessage(pcbIter->pid, "APPROVED REQUEST");
                     kill(pcbIter->pid, SIGUSR2);
                     pcbIter++;
                 }

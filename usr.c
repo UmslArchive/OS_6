@@ -14,7 +14,10 @@ int main(int arg, char* argv[]) {
     sigaddset(&mask, SIGTERM);
 
     //Seed rand
-    srand(time(NULL));
+    char* seedOffsetStr = argv[1];
+    int seedOffset = atoi(seedOffsetStr);
+
+    srand(time(NULL) + seedOffset);
 
     //Register signal handler
     usrInitSignalHandler();
@@ -59,9 +62,9 @@ int main(int arg, char* argv[]) {
     reqTime.nanoseconds = 0;
     reqTime.seconds = 0;
 
-    //Create message string
+    //Message buffer
     char msgBuff[100];
-    sprintf(msgBuff, "\"usr %d says hello\"", getpid());
+    int readOrWrite = 0;
 
     //Set state to ready
     pcbIterator->state = READY;
@@ -74,6 +77,13 @@ int main(int arg, char* argv[]) {
 
         //Send request if it is time
         if(checkIfPassedTime(shmClockPtr, &reqTime) == 1) {
+            readOrWrite = rand() % 2;
+            if(readOrWrite == 0) {
+                sprintf(msgBuff, "%d, READ, %d", getpid(), rand() % 100);
+            }
+            else {
+                sprintf(msgBuff, "%d, WRITE, %d",  getpid(), rand() % 100);
+            }
             
             usrSendMessage(msgBuff);
 
@@ -82,9 +92,11 @@ int main(int arg, char* argv[]) {
             //Suspend until oss sends SIGUSR2 signal (request approval)
             sigprocmask(SIG_SETMASK, &mask, &oldmask);
             if(!usrSignalReceivedFlag) {
+                pcbIterator->state = WAITING;
                 sigsuspend (&mask);
-            }   
+            }
             sigprocmask(SIG_SETMASK, &oldmask, NULL);
+            pcbIterator->state = READY;
 
             //Generate next request time
             setClock (
