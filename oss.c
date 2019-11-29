@@ -79,7 +79,7 @@ int main(int arg, char* argv[]) {
         if(checkIfPassedTime(shmClockPtr, &spawnTime)) {
             spawnProcess(shmPcbPtr);
 
-            //Send message to all children
+            //Send message to all waiting children whose request has been recvd
             pcbIter = shmPcbPtr;
             for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
                 if(pcbIter->state == WAITING) {
