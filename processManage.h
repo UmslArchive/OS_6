@@ -20,6 +20,7 @@
 
 typedef enum ps_state_enum {
     NULL_PS,
+    INITIALIZING,
     READY
 } State;
 

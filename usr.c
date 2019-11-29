@@ -9,6 +9,10 @@
 
 int main(int arg, char* argv[]) {
 
+    sigset_t mask, oldmask;
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGTERM);
+
     //Seed rand
     srand(time(NULL));
 
@@ -16,6 +20,7 @@ int main(int arg, char* argv[]) {
     usrInitSignalHandler();
     sigaction(SIGTERM, &usrSigAction, 0);
     sigaction(SIGINT, &usrSigAction, 0);
+    sigaction(SIGUSR2, &usrSigAction, 0);
 
     //Get shared memory pointers
     sem_t* shmSemPtr = 
@@ -58,6 +63,9 @@ int main(int arg, char* argv[]) {
     char msgBuff[100];
     sprintf(msgBuff, "\"usr %d says hello\"", getpid());
 
+    //Set state to ready
+    pcbIterator->state = READY;
+
     //-----
 
     while(!usrSignalReceivedFlag) {
@@ -68,6 +76,14 @@ int main(int arg, char* argv[]) {
         if(checkIfPassedTime(shmClockPtr, &reqTime) == 1) {
             
             usrSendMessage(msgBuff);
+
+            fprintf(stderr, "%d suspended\n", getpid());
+
+            //Suspend until oss sends SIGUSR2 signal (request approval)
+            sigprocmask(SIG_SETMASK, &mask, &oldmask);
+            if(!usrSignalReceivedFlag)
+                sigsuspend (&mask);
+            sigprocmask(SIG_SETMASK, &oldmask, NULL);
 
             //Generate next request time
             setClock (

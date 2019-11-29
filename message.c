@@ -7,7 +7,7 @@
 #include "message.h"
 
 //Shared memory vars
-const key_t msgKey = 0x11111111;
+const key_t msgKey = 0x12341234;
 int msgID = 0;
 const size_t msgSize = sizeof(struct Msg) - sizeof(long);
 const int MSG_OSS_FLAGS = 0666 | IPC_CREAT;

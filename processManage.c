@@ -130,7 +130,7 @@ void addToPcbArray(PCB* pcbArray, pid_t pid) {
     }
 
     iterator->pid = pid;
-    iterator->state = READY;
+    iterator->state = INITIALIZING;
 }
 
 void waitNoBlock(PCB* pcbArray) {
@@ -185,6 +185,7 @@ void killChildren(PCB* pcbArray) {
     int i;
     for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
         if(iterator->state != NULL_PS) {
+            kill(iterator->pid, SIGUSR2);
             kill(iterator->pid, SIGTERM);
         }
         iterator++;
