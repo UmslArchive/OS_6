@@ -81,8 +81,9 @@ int main(int arg, char* argv[]) {
 
             //Suspend until oss sends SIGUSR2 signal (request approval)
             sigprocmask(SIG_SETMASK, &mask, &oldmask);
-            if(!usrSignalReceivedFlag)
+            if(!usrSignalReceivedFlag) {
                 sigsuspend (&mask);
+            }   
             sigprocmask(SIG_SETMASK, &oldmask, NULL);
 
             //Generate next request time
