@@ -151,7 +151,7 @@ void receiveDeathMessage(long* accessPerSecond, long* faultsPerAccess, Clock* av
 
         fprintf (
             stderr, 
-            "OSS rcv: %ld %ld %d:%d\n", 
+            "DEATH: %ld %ld %d:%d\n", 
             *accessPerSecond, 
             *faultsPerAccess, 
             avgAccessSpeed->seconds,
