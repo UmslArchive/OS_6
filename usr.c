@@ -83,9 +83,9 @@ int main(int arg, char* argv[]) {
 
             //Death check
             if(referenceCount % dieCheck == 0 && referenceCount > 0) {
-                die = rand() % 2;
+                die = rand() % 15;
                 fprintf(stderr, "die %d\n", die);
-                if(die)
+                if(die == 0)
                     break;
             }
 

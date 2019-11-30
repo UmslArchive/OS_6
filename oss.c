@@ -57,10 +57,19 @@ int main(int arg, char* argv[]) {
             &shmPcbID, 
             SHM_OSS_FLAGS
         );
+    
+    FrameTable* shmFrameTable = 
+        (FrameTable*)initSharedMemory (
+            ftKey,
+            ftSize,
+            &ftID,
+            FT_OSS_FLAGS
+        );
 
     //Init shared memory values
     initClock(shmClockPtr);
     ossInitPcbArray(shmPcbPtr);
+    initFrameTable(shmFrameTable);
 
     //Message queue init
     int msgPid, msgReqType, msgReqAddr;
@@ -79,9 +88,10 @@ int main(int arg, char* argv[]) {
     while(!ossSignalReceivedFlag) {
 
         if(shmClockPtr->seconds > prevSecond) {
+            fprintf(stderr, "\t\t\t\t");
             printClock(shmClockPtr);
             prevSecond = shmClockPtr->seconds;
-            sleep(1);
+            sleep(2);
         }
 
         //Process message

@@ -16,6 +16,8 @@
 #include <errno.h>
 #include <signal.h>
 
+#include "memoryManage.h"
+
 #define MAX_CHILD_PROCESSES 18
 
 typedef enum ps_state_enum {
@@ -27,7 +29,8 @@ typedef enum ps_state_enum {
 
 typedef struct pcb_struct {
     pid_t pid;
-    State state;    
+    State state;
+    PageTable pt;
 } PCB;
 
 //Initialization

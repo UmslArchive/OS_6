@@ -77,7 +77,7 @@ void detachAll() {
     if(shmSemID > 0)
         shmdt(&shmSemID);
     if(shmPcbID > 0)
-        shmdt(&shmPcbID);    
+        shmdt(&shmPcbID);
 }
 
 void cleanupSharedMemory(int* shmid) {
@@ -98,4 +98,5 @@ void cleanupAll() {
         cleanupSharedMemory(&shmPcbID);
 
     destroyMessageQueue();
+    destroyFrameTable();
 }
