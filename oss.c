@@ -95,10 +95,20 @@ int main(int arg, char* argv[]) {
             //printPcb(shmPcbPtr, getIndexOfPid(shmPcbPtr, msgPid));
             if(pcbIter->state == WAITING) {             
                 if(msgReqType == READ) {
-                    sprintf(msgBuff, "%d APPROVED for READ at %d", msgPid, msgReqAddr);
+                    sprintf (
+                        msgBuff, 
+                        "%d APPROVED for READ at %d", 
+                        msgPid, 
+                        msgReqAddr
+                    );
                 }
                 else {
-                    sprintf(msgBuff, "%d APPROVED for WRITE at %d", msgPid, msgReqAddr);
+                    sprintf (
+                        msgBuff,
+                        "%d APPROVED for WRITE at %d",
+                        msgPid,
+                        msgReqAddr
+                    );
                 }
                 ossSendMessage(pcbIter->pid, msgBuff);
                 pcbIter->state = READY;

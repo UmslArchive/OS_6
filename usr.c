@@ -86,8 +86,8 @@ int main(int arg, char* argv[]) {
             while(pcbIterator->state == WAITING && !usrSignalReceivedFlag);
             referenceCount++;
 
-            if(!usrSignalReceivedFlag)
-                fprintf(stderr, "%d has made %d refs\n", getpid(), referenceCount);
+            /* if(!usrSignalReceivedFlag)
+                fprintf(stderr, "%d has made %d refs\n", getpid(), referenceCount); */
 
             //Generate next request time
             setClock (
@@ -95,7 +95,7 @@ int main(int arg, char* argv[]) {
                 shmClockPtr->seconds,
                 shmClockPtr->nanoseconds
             );
-            advanceClock(&reqTime, 1, rand() % 50000);
+            advanceClock(&reqTime, 0, rand() % 50000);
         }
     }
 

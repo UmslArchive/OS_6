@@ -28,6 +28,10 @@ typedef enum req_type_enum {
     WRITE
 } reqType;
 
+typedef enum msg_type_enum {
+    TO_OSS = 100000
+} msgType;
+
 //Shared memory vars
 extern const key_t msgKey;
 extern int msgID;

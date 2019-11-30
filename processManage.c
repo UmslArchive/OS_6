@@ -96,7 +96,7 @@ int spawnProcess(PCB* pcbArray) {
 
     pid = fork();
 
-    //This 
+    //rand() was not random at all w/out this
     int randSeedOffset = rand() % 100;
     char rso[5];
     sprintf(rso, "%d", randSeedOffset);

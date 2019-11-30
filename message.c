@@ -48,7 +48,15 @@ void ossReceiveMessage(int* msgPid, int* msgReqType, int* msgReqAddr) {
     struct Msg rcvMsg;
     int i;
     char* token = NULL;
-    int success = msgrcv(msgID, &rcvMsg, sizeof(rcvMsg.msgText), 100000, IPC_NOWAIT);
+    int success = 
+        msgrcv (
+            msgID,
+            &rcvMsg, 
+            sizeof(rcvMsg.msgText), 
+            TO_OSS, 
+            IPC_NOWAIT
+        );
+    
     if(success != -1) {
         //Parse the message
         token = strtok(rcvMsg.msgText, ",");
@@ -81,7 +89,7 @@ void ossReceiveMessage(int* msgPid, int* msgReqType, int* msgReqAddr) {
 
 void usrSendMessage(const char* text) {
     struct Msg newMsg;
-    newMsg.msgType = 100000;
+    newMsg.msgType = TO_OSS;
     int len = strlen(text) + 1;
     memcpy((char*)newMsg.msgText, (char*)text, len);
     msgsnd(msgID, &newMsg, len, 0);
