@@ -91,10 +91,10 @@ int main(int arg, char* argv[]) {
 
             readOrWrite = rand() % 2;
             if(readOrWrite == 0) {
-                sprintf(msgBuff, "%d,READ,%d", getpid(), rand() % 100);
+                sprintf(msgBuff, "%d,READ,%d", getpid(), rand() % MAX_PROCESS_SIZE);
             }
             else {
-                sprintf(msgBuff, "%d,WRITE,%d",  getpid(), rand() % 100);
+                sprintf(msgBuff, "%d,WRITE,%d",  getpid(), rand() % MAX_PROCESS_SIZE);
             }
             
             pcbIterator->state = WAITING;
@@ -102,8 +102,8 @@ int main(int arg, char* argv[]) {
             while(pcbIterator->state == WAITING && !usrSignalReceivedFlag);
             referenceCount++;
 
-            if(!usrSignalReceivedFlag)
-                fprintf(stderr, "%d has made %d refs\n", getpid(), referenceCount);
+            /* if(!usrSignalReceivedFlag)
+                fprintf(stderr, "%d has made %d refs\n", getpid(), referenceCount); */
 
             //Generate next request time
             setClock (
@@ -116,6 +116,8 @@ int main(int arg, char* argv[]) {
     }
 
     //-----
+
+    sendDeathMessage("1,2,3,4");
 
     detachAll();
 

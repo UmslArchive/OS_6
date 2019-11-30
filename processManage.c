@@ -139,7 +139,7 @@ void addToPcbArray(PCB* pcbArray, pid_t pid) {
     iterator->state = INITIALIZING;
 }
 
-void waitNoBlock(PCB* pcbArray) {
+void waitNoBlock(PCB* pcbArray, long* accessPerSecond, long* faultsPerAccess, Clock* avgAccessSpeed) {
     while((pid = waitpid(-1, &exitStatus, WNOHANG))) {
         if((pid == -1) && (errno != EINTR))
             break;
@@ -149,6 +149,7 @@ void waitNoBlock(PCB* pcbArray) {
                 "EXIT pid(%d) w/ status %d\n", 
                 pid, WEXITSTATUS(exitStatus)
             );
+            receiveDeathMessage(accessPerSecond, faultsPerAccess, avgAccessSpeed);
             removeFromPcbArray(pcbArray, pid);
         }
     }

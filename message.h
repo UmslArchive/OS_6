@@ -16,6 +16,8 @@
 #include <sys/msg.h>
 #include <signal.h>
 
+#include "clock.h"
+
 #define MAX_MSG_LEN 100
 
 struct Msg {
@@ -50,5 +52,8 @@ void ossSendMessage(long pid, const char* text);
 void ossReceiveMessage(int* msgPid, int* msgReqType, int* msgReqAddr);
 void usrSendMessage(const char* text);
 void usrReceiveMessage();
+
+void sendDeathMessage(const char* text);
+void receiveDeathMessage(long* accessPerSecond, long* faultsPerAccess, Clock* avgAccessSpeed);
 
 #endif

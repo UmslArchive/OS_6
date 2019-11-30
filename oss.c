@@ -81,7 +81,12 @@ int main(int arg, char* argv[]) {
     spawnTime.nanoseconds = rand() % 499999999 + 1;
     spawnTime.seconds = 0;
 
+    //Mark every second
     int prevSecond = shmClockPtr->seconds;
+
+    //Child death stats
+    long accessPerSecond, faultsPerAccess;
+    Clock avgAccessSpeed;
 
     //-----
 
@@ -147,7 +152,7 @@ int main(int arg, char* argv[]) {
         sem_post(shmSemPtr);
 
         //Wait on dead child if there is one
-        waitNoBlock(shmPcbPtr);
+        waitNoBlock(shmPcbPtr, &accessPerSecond, &faultsPerAccess, &avgAccessSpeed);
     }
 
     //-----
@@ -157,7 +162,7 @@ int main(int arg, char* argv[]) {
 
     //Wait on remaining processes
     while(areActiveProcesses(shmPcbPtr) == 1)
-        waitNoBlock(shmPcbPtr);
+        waitNoBlock(shmPcbPtr, &accessPerSecond, &faultsPerAccess, &avgAccessSpeed);
 
     //Cleanup shared memory and message queue
     cleanupAll();

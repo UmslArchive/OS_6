@@ -106,3 +106,56 @@ void usrReceiveMessage(long pid) {
         );
     }
 }
+
+void sendDeathMessage(const char* text) {
+    struct Msg newMsg;
+    newMsg.msgType = DEATH_MSG;
+    int len = strlen(text) + 1;
+    memcpy((char*)newMsg.msgText, (char*)text, len);
+    msgsnd(msgID, &newMsg, len, 0);
+}
+
+void receiveDeathMessage(long* accessPerSecond, long* faultsPerAccess, Clock* avgAccessSpeed) {
+    struct Msg rcvMsg;
+    int i;
+    char* token = NULL;
+    int success = 
+        msgrcv (
+            msgID,
+            &rcvMsg, 
+            sizeof(rcvMsg.msgText), 
+            DEATH_MSG, 
+            IPC_NOWAIT
+        );
+    
+    if(success != -1) {
+        //Parse the message
+        token = strtok(rcvMsg.msgText, ",");
+        *accessPerSecond = atoi(token);
+        for(i = 0; i < 3; ++i){
+            token = strtok(NULL, ",");
+            switch(i) {
+                case 0:
+                    *faultsPerAccess = atoi(token);
+                break;
+
+                case 1:
+                    avgAccessSpeed->seconds = atoi(token);
+                break;
+
+                case 2:
+                    avgAccessSpeed->nanoseconds = atoi(token);
+                break;
+            }
+        }
+
+        fprintf (
+            stderr, 
+            "OSS rcv: %ld %ld %d:%d\n", 
+            *accessPerSecond, 
+            *faultsPerAccess, 
+            avgAccessSpeed->seconds,
+            avgAccessSpeed->nanoseconds
+        );
+    }
+}

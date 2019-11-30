@@ -17,6 +17,7 @@
 #include <signal.h>
 
 #include "memoryManage.h"
+#include "message.h"
 
 #define MAX_CHILD_PROCESSES 18
 
@@ -40,7 +41,7 @@ void initPcb(PCB* pcbIterator);
 //oss process management functions:
 int spawnProcess(PCB* pcbArray);
 void addToPcbArray(PCB* pcbArray, pid_t pid);
-void waitNoBlock(PCB* pcbArray);
+void waitNoBlock(PCB* pcbArray, long* accessPerSecond, long* faultsPerAccess, Clock* avgAccessSpeed);
 void removeFromPcbArray(PCB* pcbArray, pid_t pid);
 int areActiveProcesses(PCB* pcbArray);
 void killChildren(PCB* pcbArray);
