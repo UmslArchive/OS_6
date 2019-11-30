@@ -81,12 +81,13 @@ int main(int arg, char* argv[]) {
                 sprintf(msgBuff, "%d,WRITE,%d",  getpid(), rand() % 100);
             }
             
-            usrSendMessage(msgBuff);
             pcbIterator->state = WAITING;
+            usrSendMessage(msgBuff);
             while(pcbIterator->state == WAITING && !usrSignalReceivedFlag);
             referenceCount++;
 
-            fprintf(stderr, "%d has made %d refs\n", getpid(), referenceCount);
+            if(!usrSignalReceivedFlag)
+                fprintf(stderr, "%d has made %d refs\n", getpid(), referenceCount);
 
             //Generate next request time
             setClock (

@@ -82,23 +82,24 @@ int main(int arg, char* argv[]) {
             prevSecond = shmClockPtr->seconds;
         }
 
-        //Send message to all waiting children whose request has been recvd
+        //Process message
         msgPid = -1;
         msgReqType = -1;
         msgReqAddr = -1;
         ossReceiveMessage(&msgPid, &msgReqType, &msgReqAddr);
 
         if(msgPid != -1) {
+            
             pcbIter = shmPcbPtr;
             pcbIter += getIndexOfPid(shmPcbPtr, msgPid);
-            if(pcbIter->state == WAITING) {                
+            //printPcb(shmPcbPtr, getIndexOfPid(shmPcbPtr, msgPid));
+            if(pcbIter->state == WAITING) {             
                 if(msgReqType == READ) {
                     sprintf(msgBuff, "%d APPROVED for READ at %d", msgPid, msgReqAddr);
                 }
                 else {
                     sprintf(msgBuff, "%d APPROVED for WRITE at %d", msgPid, msgReqAddr);
                 }
-
                 ossSendMessage(pcbIter->pid, msgBuff);
                 pcbIter->state = READY;
             }
