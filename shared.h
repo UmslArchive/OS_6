@@ -24,6 +24,7 @@
 #include "clock.h"
 #include "message.h"
 #include "processManage.h"
+#include "memoryManage.h"
 
 //Keys
 extern const key_t SHM_KEY_SEM;     
