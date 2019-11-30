@@ -66,6 +66,10 @@ int main(int arg, char* argv[]) {
 
     //-----
 
+    //Requests
+    int page, genAddr;
+    int processSize = rand() % MAX_PROCESS_SIZE + 1;
+
     //Stats and death
     int referenceCount = 0;
     int pageFaults = 0;
@@ -90,11 +94,12 @@ int main(int arg, char* argv[]) {
             }
 
             readOrWrite = rand() % 2;
+            genAddr = rand() % processSize;
             if(readOrWrite == 0) {
-                sprintf(msgBuff, "%d,READ,%d", getpid(), rand() % MAX_PROCESS_SIZE);
+                sprintf(msgBuff, "%d,READ,%d,%d", getpid(), genAddr, genAddr / PAGE_SIZE);
             }
             else {
-                sprintf(msgBuff, "%d,WRITE,%d",  getpid(), rand() % MAX_PROCESS_SIZE);
+                sprintf(msgBuff, "%d,WRITE,%d,%d",  getpid(), genAddr, genAddr / PAGE_SIZE);
             }
             
             pcbIterator->state = WAITING;

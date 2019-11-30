@@ -44,7 +44,7 @@ void ossSendMessage(long pid, const char* text) {
     msgsnd(msgID, &newMsg, len, 0);
 }
 
-void ossReceiveMessage(int* msgPid, int* msgReqType, int* msgReqAddr) {
+void ossReceiveMessage(int* msgPid, int* msgReqType, int* msgReqAddr, int* msgPage) {
     struct Msg rcvMsg;
     int i;
     char* token = NULL;
@@ -61,7 +61,7 @@ void ossReceiveMessage(int* msgPid, int* msgReqType, int* msgReqAddr) {
         //Parse the message
         token = strtok(rcvMsg.msgText, ",");
         *msgPid = atoi(token);
-        for(i = 0; i < 2; ++i){
+        for(i = 0; i < 3; ++i){
             token = strtok(NULL, ",");
             switch(i) {
                 case 0:
@@ -76,13 +76,17 @@ void ossReceiveMessage(int* msgPid, int* msgReqType, int* msgReqAddr) {
                 case 1:
                     *msgReqAddr = atoi(token);
                 break;
+
+                case 2:
+                    *msgPage = atoi(token);
+                break;
             }
         }
 
         fprintf (
             stderr, 
-            "OSS rcv: %d %d %d\n", 
-            *msgPid, *msgReqType, *msgReqAddr
+            "OSS rcv: %d %d %d %d\n", 
+            *msgPid, *msgReqType, *msgReqAddr, *msgPage
         );
     }    
 }

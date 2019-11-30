@@ -49,7 +49,7 @@ void destroyMessageQueue();
 
 //Send/Receive
 void ossSendMessage(long pid, const char* text);
-void ossReceiveMessage(int* msgPid, int* msgReqType, int* msgReqAddr);
+void ossReceiveMessage(int* msgPid, int* msgReqType, int* msgReqAddr, int* msgPage);
 void usrSendMessage(const char* text);
 void usrReceiveMessage();
 

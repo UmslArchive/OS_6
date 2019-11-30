@@ -12,7 +12,7 @@
 #define PAGE_SIZE 1024          //(1K)
 
 #define PT_SIZE 32
-#define FT_SIZE 25         //256
+#define FT_SIZE 256
 
 #include <stdio.h>
 #include <stdlib.h>

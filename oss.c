@@ -72,7 +72,7 @@ int main(int arg, char* argv[]) {
     initFrameTable(shmFrameTable);
 
     //Message queue init
-    int msgPid, msgReqType, msgReqAddr;
+    int msgPid, msgReqType, msgReqAddr, msgPage;
     char msgBuff[100];
     ossInitMessageQueue();
 
@@ -103,7 +103,10 @@ int main(int arg, char* argv[]) {
         msgPid = -1;
         msgReqType = -1;
         msgReqAddr = -1;
-        ossReceiveMessage(&msgPid, &msgReqType, &msgReqAddr);
+        msgPage = -1;
+        ossReceiveMessage(&msgPid, &msgReqType, &msgReqAddr, &msgPage);
+
+        //touchPage(shmFrameTable, )
 
         if(msgPid != -1) {
             
