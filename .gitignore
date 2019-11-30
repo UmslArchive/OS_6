@@ -1,5 +1,4 @@
 *.o
-*.sh
 usr
 oss
 test
