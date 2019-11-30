@@ -7,7 +7,7 @@
 #include "interrupts.h"
 #include "shared.h"
 
-#define TICK_RATE 10 //nanoseconds
+#define TICK_RATE 50 //nanoseconds
 
 int main(int arg, char* argv[]) {
 
@@ -63,6 +63,7 @@ int main(int arg, char* argv[]) {
 
     //Message queue init
     int msgPid, msgReqType, msgReqAddr;
+    char msgBuff[100];
     ossInitMessageQueue();
 
     //Generate first process random spawn time
@@ -81,17 +82,28 @@ int main(int arg, char* argv[]) {
             prevSecond = shmClockPtr->seconds;
         }
 
+        //Send message to all waiting children whose request has been recvd
+        msgPid = -1;
+        msgReqType = -1;
+        msgReqAddr = -1;
         ossReceiveMessage(&msgPid, &msgReqType, &msgReqAddr);
 
-        //Send message to all waiting children whose request has been recvd
-        pcbIter = shmPcbPtr;
-        for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
-            if(pcbIter->state == WAITING) {
-                ossSendMessage(pcbIter->pid, "APPROVED REQUEST");
-                kill(pcbIter->pid, SIGUSR2);
-                pcbIter++;
+        if(msgPid != -1) {
+            pcbIter = shmPcbPtr;
+            pcbIter += getIndexOfPid(shmPcbPtr, msgPid);
+            if(pcbIter->state == WAITING) {                
+                if(msgReqType == READ) {
+                    sprintf(msgBuff, "%d APPROVED for READ at %d", msgPid, msgReqAddr);
+                }
+                else {
+                    sprintf(msgBuff, "%d APPROVED for WRITE at %d", msgPid, msgReqAddr);
+                }
+
+                ossSendMessage(pcbIter->pid, msgBuff);
+                pcbIter->state = READY;
             }
         }
+        
 
         //Spawn process every 500ms
         if(checkIfPassedTime(shmClockPtr, &spawnTime)) {

@@ -40,10 +40,6 @@ void usrSignalHandler(int signal) {
             raise(SIGUSR2);
             usrSignalReceivedFlag = 1;
             break;
-
-        case SIGUSR2:
-            //fprintf(stderr, "USR %d caught SIGUSR2 signal\n", getpid());
-            break;
     } 
 }
 

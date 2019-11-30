@@ -9,10 +9,6 @@
 
 int main(int arg, char* argv[]) {
 
-    sigset_t mask, oldmask;
-    sigemptyset(&mask);
-    sigaddset(&mask, SIGTERM);
-
     //Seed rand
     char* seedOffsetStr = argv[1];
     int seedOffset = atoi(seedOffsetStr);
@@ -23,8 +19,7 @@ int main(int arg, char* argv[]) {
     usrInitSignalHandler();
     sigaction(SIGTERM, &usrSigAction, 0);
     sigaction(SIGINT, &usrSigAction, 0);
-    sigaction(SIGUSR2, &usrSigAction, 0);
-
+    
     //Get shared memory pointers
     sem_t* shmSemPtr = 
         initShmSemaphore (
@@ -74,10 +69,6 @@ int main(int arg, char* argv[]) {
 
     while(!usrSignalReceivedFlag) {
 
-        if(referenceCount % 100 == 0) {
-            fprintf(stderr, "%d has made %d refs\n", getpid(), referenceCount);
-        }
-
         usrReceiveMessage((long)getpid());
 
         //Send request if it is time
@@ -91,16 +82,11 @@ int main(int arg, char* argv[]) {
             }
             
             usrSendMessage(msgBuff);
-
-            //Suspend until oss sends SIGUSR2 signal (request approval)
-            sigprocmask(SIG_SETMASK, &mask, &oldmask);
-            if(!usrSignalReceivedFlag) {
-                pcbIterator->state = WAITING;
-                sigsuspend (&mask);
-            }
-            sigprocmask(SIG_SETMASK, &oldmask, NULL);
-            pcbIterator->state = READY;
+            pcbIterator->state = WAITING;
+            while(pcbIterator->state == WAITING && !usrSignalReceivedFlag);
             referenceCount++;
+
+            fprintf(stderr, "%d has made %d refs\n", getpid(), referenceCount);
 
             //Generate next request time
             setClock (
