@@ -29,7 +29,8 @@ typedef enum req_type_enum {
 } reqType;
 
 typedef enum msg_type_enum {
-    TO_OSS = 100000
+    TO_OSS = 100000,
+    DEATH_MSG = 100001
 } msgType;
 
 //Shared memory vars

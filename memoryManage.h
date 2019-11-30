@@ -69,5 +69,7 @@ void touchPage(FrameTable* frameTable, long page, int pid, int readWrite, Clock*
 //Utility
 int getIndexOfPageInFrameTable(FrameTable* frameTable, long page, int pid);
 int getIndexOfFirstEmptyFrame(FrameTable* frameTable);
+void printFrameTable(FrameTable* frameTable);
+void printFrame(FrameTable* frameTable, int frameIndex);
 
 #endif

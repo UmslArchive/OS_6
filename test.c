@@ -7,6 +7,7 @@ void testTimeHasPassed();
 void testClockSet();
 void testPcbArrayInit();
 void testProcessSpawnDespawn();
+void testMemoryManage();
 
 //===========================================================
 
@@ -26,6 +27,7 @@ int main() {
     testProcessSpawnDespawn();
 
     //Memory tests
+    testMemoryManage();
 
     return 0;
 }
@@ -212,4 +214,19 @@ void testProcessSpawnDespawn() {
 
 
     free(pcbArray);
+}
+
+void testMemoryManage() {
+    FrameTable* frameTable = (FrameTable*)malloc(sizeof(FrameTable));
+    initFrameTable(frameTable);
+
+    //Test label
+    printf("Memory Manager Tests:\n");
+
+    printFrameTable(frameTable);
+
+
+    printf("-----\n");
+
+    free(frameTable);
 }

@@ -122,3 +122,34 @@ void touchPage(FrameTable* frameTable, long page, int pid, int readWrite, Clock*
 
     setClock(&frameTable->table[frameIndex].timestamp, ts.seconds, ts.nanoseconds);    
 }
+
+void printFrameTable(FrameTable* frameTable) {
+    int i;
+    for(i = 0; i < FT_SIZE; ++i) {
+        fprintf (
+            stderr,
+            "F#%.3d pid(%.5d) page(%.2ld) ts(%.2d:%.9d), ref(%.2ld), dirt(%d)\n",
+            i,
+            frameTable->table[i].pid,
+            frameTable->table[i].page,
+            frameTable->table[i].timestamp.seconds,
+            frameTable->table[i].timestamp.nanoseconds,
+            frameTable->table[i].ref,
+            frameTable->table[i].dirty
+        );
+    }
+}
+
+void printFrame(FrameTable* frameTable, int frameIndex) {
+    fprintf (
+        stderr,
+        "F#%d pid(%.3d) page(%ld) ts(%d:%d), ref(%ld), dirt(%d)\n",
+        frameIndex,
+        frameTable->table[frameIndex].pid,
+        frameTable->table[frameIndex].page,
+        frameTable->table[frameIndex].timestamp.seconds,
+        frameTable->table[frameIndex].timestamp.nanoseconds,
+        frameTable->table[frameIndex].ref,
+        frameTable->table[frameIndex].dirty
+    );
+}
