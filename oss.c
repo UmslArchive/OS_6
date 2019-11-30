@@ -7,7 +7,7 @@
 #include "interrupts.h"
 #include "shared.h"
 
-#define TICK_RATE 50            //ns
+#define TICK_RATE 500            //ns
 #define SPAWN_RATE 499999999    //ns
 
 int main(int arg, char* argv[]) {
