@@ -7,7 +7,8 @@
 #include "interrupts.h"
 #include "shared.h"
 
-#define TICK_RATE 50 //nanoseconds
+#define TICK_RATE 50            //ns
+#define SPAWN_RATE 499999999    //ns
 
 int main(int arg, char* argv[]) {
 
@@ -80,6 +81,7 @@ int main(int arg, char* argv[]) {
         if(shmClockPtr->seconds > prevSecond) {
             printClock(shmClockPtr);
             prevSecond = shmClockPtr->seconds;
+            sleep(1);
         }
 
         //Process message
@@ -126,7 +128,7 @@ int main(int arg, char* argv[]) {
                 shmClockPtr->seconds,
                 shmClockPtr->nanoseconds
             );
-            advanceClock(&spawnTime, 0, rand() % 499999999 + 1);
+            advanceClock(&spawnTime, 0, rand() % SPAWN_RATE + 1);
         }
 
         //Advance the clock

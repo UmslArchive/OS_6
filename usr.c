@@ -65,7 +65,14 @@ int main(int arg, char* argv[]) {
     pcbIterator->state = READY;
 
     //-----
+
+    //Stats and death
     int referenceCount = 0;
+    int pageFaults = 0;
+    Clock totalAccessTime;
+    initClock(&totalAccessTime);
+    int dieCheck = 1000 + (rand() % 200) - 100;
+    int die;
 
     while(!usrSignalReceivedFlag) {
 
@@ -73,6 +80,15 @@ int main(int arg, char* argv[]) {
 
         //Send request if it is time
         if(checkIfPassedTime(shmClockPtr, &reqTime) == 1) {
+
+            //Death check
+            if(referenceCount % dieCheck == 0 && referenceCount > 0) {
+                die = rand() % 2;
+                fprintf(stderr, "die %d\n", die);
+                if(die)
+                    break;
+            }
+
             readOrWrite = rand() % 2;
             if(readOrWrite == 0) {
                 sprintf(msgBuff, "%d,READ,%d", getpid(), rand() % 100);
@@ -86,8 +102,8 @@ int main(int arg, char* argv[]) {
             while(pcbIterator->state == WAITING && !usrSignalReceivedFlag);
             referenceCount++;
 
-            /* if(!usrSignalReceivedFlag)
-                fprintf(stderr, "%d has made %d refs\n", getpid(), referenceCount); */
+            if(!usrSignalReceivedFlag)
+                fprintf(stderr, "%d has made %d refs\n", getpid(), referenceCount);
 
             //Generate next request time
             setClock (
@@ -95,7 +111,7 @@ int main(int arg, char* argv[]) {
                 shmClockPtr->seconds,
                 shmClockPtr->nanoseconds
             );
-            advanceClock(&reqTime, 0, rand() % 50000);
+            advanceClock(&reqTime, 0, rand() % 500000);
         }
     }
 
