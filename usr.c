@@ -70,8 +70,13 @@ int main(int arg, char* argv[]) {
     pcbIterator->state = READY;
 
     //-----
+    int referenceCount = 0;
 
     while(!usrSignalReceivedFlag) {
+
+        if(referenceCount % 100 == 0) {
+            fprintf(stderr, "%d has made %d refs\n", getpid(), referenceCount);
+        }
 
         usrReceiveMessage((long)getpid());
 
@@ -79,15 +84,13 @@ int main(int arg, char* argv[]) {
         if(checkIfPassedTime(shmClockPtr, &reqTime) == 1) {
             readOrWrite = rand() % 2;
             if(readOrWrite == 0) {
-                sprintf(msgBuff, "%d, READ, %d", getpid(), rand() % 100);
+                sprintf(msgBuff, "%d,READ,%d", getpid(), rand() % 100);
             }
             else {
-                sprintf(msgBuff, "%d, WRITE, %d",  getpid(), rand() % 100);
+                sprintf(msgBuff, "%d,WRITE,%d",  getpid(), rand() % 100);
             }
             
             usrSendMessage(msgBuff);
-
-            fprintf(stderr, "%d suspended\n", getpid());
 
             //Suspend until oss sends SIGUSR2 signal (request approval)
             sigprocmask(SIG_SETMASK, &mask, &oldmask);
@@ -97,6 +100,7 @@ int main(int arg, char* argv[]) {
             }
             sigprocmask(SIG_SETMASK, &oldmask, NULL);
             pcbIterator->state = READY;
+            referenceCount++;
 
             //Generate next request time
             setClock (
@@ -104,7 +108,7 @@ int main(int arg, char* argv[]) {
                 shmClockPtr->seconds,
                 shmClockPtr->nanoseconds
             );
-            advanceClock(&reqTime, 0, rand() % 499999999 + 1);
+            advanceClock(&reqTime, 0, rand() % 50000);
         }
     }
 

@@ -23,6 +23,11 @@ struct Msg {
     char msgText[MAX_MSG_LEN];
 };
 
+typedef enum req_type_enum {
+    READ,
+    WRITE
+} reqType;
+
 //Shared memory vars
 extern const key_t msgKey;
 extern int msgID;
@@ -37,7 +42,7 @@ void destroyMessageQueue();
 
 //Send/Receive
 void ossSendMessage(long pid, const char* text);
-void ossReceiveMessage();
+void ossReceiveMessage(int* msgPid, int* msgReqType, int* msgReqAddr);
 void usrSendMessage(const char* text);
 void usrReceiveMessage();
 

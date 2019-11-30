@@ -7,7 +7,7 @@
 #include "interrupts.h"
 #include "shared.h"
 
-#define TICK_RATE 10000 //nanoseconds
+#define TICK_RATE 10 //nanoseconds
 
 int main(int arg, char* argv[]) {
 
@@ -62,6 +62,7 @@ int main(int arg, char* argv[]) {
     ossInitPcbArray(shmPcbPtr);
 
     //Message queue init
+    int msgPid, msgReqType, msgReqAddr;
     ossInitMessageQueue();
 
     //Generate first process random spawn time
@@ -69,25 +70,32 @@ int main(int arg, char* argv[]) {
     spawnTime.nanoseconds = rand() % 499999999 + 1;
     spawnTime.seconds = 0;
 
+    int prevSecond = shmClockPtr->seconds;
+
     //-----
 
     while(!ossSignalReceivedFlag) {
 
-        ossReceiveMessage();
+        if(shmClockPtr->seconds > prevSecond) {
+            printClock(shmClockPtr);
+            prevSecond = shmClockPtr->seconds;
+        }
+
+        ossReceiveMessage(&msgPid, &msgReqType, &msgReqAddr);
+
+        //Send message to all waiting children whose request has been recvd
+        pcbIter = shmPcbPtr;
+        for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
+            if(pcbIter->state == WAITING) {
+                ossSendMessage(pcbIter->pid, "APPROVED REQUEST");
+                kill(pcbIter->pid, SIGUSR2);
+                pcbIter++;
+            }
+        }
 
         //Spawn process every 500ms
         if(checkIfPassedTime(shmClockPtr, &spawnTime)) {
             spawnProcess(shmPcbPtr);
-
-            //Send message to all waiting children whose request has been recvd
-            pcbIter = shmPcbPtr;
-            for(i = 0; i < MAX_CHILD_PROCESSES; ++i) {
-                if(pcbIter->state == WAITING) {
-                    ossSendMessage(pcbIter->pid, "APPROVED REQUEST");
-                    kill(pcbIter->pid, SIGUSR2);
-                    pcbIter++;
-                }
-            }
 
             //Generate next spawn time
             setClock (

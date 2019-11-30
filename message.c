@@ -44,14 +44,37 @@ void ossSendMessage(long pid, const char* text) {
     msgsnd(msgID, &newMsg, len, 0);
 }
 
-void ossReceiveMessage() {
+void ossReceiveMessage(int* msgPid, int* msgReqType, int* msgReqAddr) {
     struct Msg rcvMsg;
+    int i;
+    char* token = NULL;
     int success = msgrcv(msgID, &rcvMsg, sizeof(rcvMsg.msgText), 100000, IPC_NOWAIT);
     if(success != -1) {
+        //Parse the message
+        token = strtok(rcvMsg.msgText, ",");
+        *msgPid = atoi(token);
+        for(i = 0; i < 2; ++i){
+            token = strtok(NULL, ",");
+            switch(i) {
+                case 0:
+                    if(strcmp(token, "READ") == 0) {
+                        *msgReqType = READ;
+                    }
+                    else if(strcmp(token, "WRITE") == 0) {
+                        *msgReqType = WRITE;
+                    }
+                break;
+
+                case 1:
+                    *msgReqAddr = atoi(token);
+                break;
+            }
+        }
+
         fprintf (
             stderr, 
-            "OSS received msg: %s type(%ld)\n", 
-            rcvMsg.msgText, rcvMsg.msgType
+            "OSS rcv: %d %d %d\n", 
+            *msgPid, *msgReqType, *msgReqAddr
         );
     }    
 }
@@ -70,8 +93,8 @@ void usrReceiveMessage(long pid) {
     if(success != -1) {
         fprintf (
             stderr,
-            "USR %ld received msg: %s type(%ld)\n",
-            pid, rcvMsg.msgText, rcvMsg.msgType
+            "USR %ld rcv: %s\n",
+            pid, rcvMsg.msgText
         );
     }
 }
