@@ -21,9 +21,11 @@ int main() {
     testTimeHasPassed();
     testClockSet();
 
-    //PCB Tests
+    //PCB tests
     testPcbArrayInit();
     testProcessSpawnDespawn();
+
+    //Memory tests
 
     return 0;
 }

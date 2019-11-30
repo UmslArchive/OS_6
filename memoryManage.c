@@ -40,22 +40,85 @@ void destroyFrameTable() {
         shmctl(ftID, IPC_RMID, NULL);
 }
 
-void pageFault(FrameTable* frameTable) {
+int pageFault(FrameTable* frameTable) {
+    int oldestIndex = 0;
+    int i;
+    for(i = 0; i < FT_SIZE - 1; ++i) {
+        if(checkIfPassedTime(&frameTable->table[oldestIndex].timestamp, &frameTable->table[i + 1].timestamp) == 0) {
+            oldestIndex = i;
+        }
+    }
 
+    return i;
 }
 
 void addPageToFrameTable(FrameTable* frameTable, long page, int pid, Clock timestamp, long ref) {
+    //Get a frame
+    int frameIndex = getIndexOfFirstEmptyFrame(frameTable);
+    if(frameIndex == -1) {
+        frameIndex = pageFault(frameTable);
+    }
 
+    //Set the frame
+    frameTable->table[frameIndex].page = page;
+    frameTable->table[frameIndex].pid = pid;
+    frameTable->table[frameIndex].ref = ref;
+    frameTable->table[frameIndex].dirty = 0;
+    initClock(&frameTable->table[frameIndex].timestamp);
+    advanceClock (
+        &frameTable->table[frameIndex].timestamp,
+        timestamp.seconds,
+        timestamp.nanoseconds
+    );
 }
 
 void makeDirty(FrameTable* frameTable, long page, int pid) {
-
+    int frameIndex = getIndexOfPageInFrameTable(frameTable, page, pid);
+    frameTable->table[frameIndex].dirty = 1;
 }
 
 void removePageFromFrameTable(FrameTable* frameTable, long page, int pid) {
-
+    int frameIndex = getIndexOfPageInFrameTable(frameTable, page, pid);
+    frameTable->table[frameIndex].dirty = 0;
+    frameTable->table[frameIndex].page = -1;
+    frameTable->table[frameIndex].pid = -1;
+    frameTable->table[frameIndex].ref = 0;
+    initClock(&frameTable->table[frameIndex].timestamp);
 }
 
 int getIndexOfPageInFrameTable(FrameTable* frameTable, long page, int pid) {
+    int i;
+    for(i = 0; i < FT_SIZE; ++i) {
+        if (frameTable->table[i].page == page && 
+            frameTable->table[i].pid == pid)
+        {
+            return i;
+        }
+    }
 
+    return -1;
+}
+
+int getIndexOfFirstEmptyFrame(FrameTable* frameTable) {
+    int i;
+    for(i = 0; i < FT_SIZE; ++i) {
+        if(frameTable->table[i].pid == -1) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+void touchPage(FrameTable* frameTable, long page, int pid, int readWrite, Clock* mainTime, long ref) {
+    int frameIndex = getIndexOfPageInFrameTable(frameTable, page, pid);
+    Clock ts;
+    setClock(&ts, mainTime->seconds, mainTime->nanoseconds);
+
+    if(frameIndex == -1) {
+        addPageToFrameTable(frameTable, page, pid, ts, ref);
+        return;
+    }
+
+    setClock(&frameTable->table[frameIndex].timestamp, ts.seconds, ts.nanoseconds);    
 }
