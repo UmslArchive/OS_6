@@ -9,7 +9,7 @@
 const key_t ftKey = 0x43214321;
 int ftID = 0;
 const size_t ftSize = sizeof(FrameTable);
-const int FT_OSS_FLAGS = 0666 | IPC_CREAT;;
+const int FT_OSS_FLAGS = 0666 | IPC_CREAT;
 const int FT_USR_FLAGS = 0666;
 
 //-----
@@ -44,18 +44,20 @@ int pageFault(FrameTable* frameTable) {
     int oldestIndex = 0;
     int i;
     for(i = 0; i < FT_SIZE - 1; ++i) {
-        if(checkIfPassedTime(&frameTable->table[oldestIndex].timestamp, &frameTable->table[i + 1].timestamp) == 0) {
+        /* printClock(&frameTable->table[oldestIndex].timestamp); */
+        if(checkIfPassedTime(&frameTable->table[oldestIndex].timestamp, &frameTable->table[i + 1].timestamp) == 1) {
             oldestIndex = i;
         }
     }
 
-    return i;
+    return oldestIndex;
 }
 
 void addPageToFrameTable(FrameTable* frameTable, long page, int pid, Clock timestamp, long ref) {
     //Get a frame
     int frameIndex = getIndexOfFirstEmptyFrame(frameTable);
     if(frameIndex == -1) {
+        //fprintf(stderr, "page fault\n");
         frameIndex = pageFault(frameTable);
     }
 
@@ -110,7 +112,7 @@ int getIndexOfFirstEmptyFrame(FrameTable* frameTable) {
     return -1;
 }
 
-void touchPage(FrameTable* frameTable, long page, int pid, int readWrite, Clock* mainTime, long ref) {
+void touchPage(FrameTable* frameTable, long page, int pid, Clock* mainTime, long ref) {
     int frameIndex = getIndexOfPageInFrameTable(frameTable, page, pid);
     Clock ts;
     setClock(&ts, mainTime->seconds, mainTime->nanoseconds);
@@ -143,7 +145,7 @@ void printFrameTable(FrameTable* frameTable) {
 void printFrame(FrameTable* frameTable, int frameIndex) {
     fprintf (
         stderr,
-        "F#%d pid(%.3d) page(%ld) ts(%d:%d), ref(%ld), dirt(%d)\n",
+        "F#%.3d pid(%.5d) page(%.2ld) ts(%.2d:%.9d), ref(%.2ld), dirt(%d)\n",
         frameIndex,
         frameTable->table[frameIndex].pid,
         frameTable->table[frameIndex].page,

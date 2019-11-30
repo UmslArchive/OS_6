@@ -212,19 +212,84 @@ void testProcessSpawnDespawn() {
 
     printPcbArray(pcbArray);
 
+    printf("-----\n");
 
     free(pcbArray);
 }
 
 void testMemoryManage() {
+    int i;
     FrameTable* frameTable = (FrameTable*)malloc(sizeof(FrameTable));
+    Clock timestamp;
+    setClock(&timestamp, 3, 909090);
     initFrameTable(frameTable);
 
     //Test label
     printf("Memory Manager Tests:\n");
 
+
+    //Unfull frame table test
+    for(i = 0; i < 10; ++i) {
+        touchPage(frameTable, rand() % 32, rand() % 99999, &timestamp, rand() % 100);
+    }
+
+    touchPage(frameTable, 2, 55555, &timestamp, 888);
+    touchPage(frameTable, 3, 55656, &timestamp, 171);
+    touchPage(frameTable, 4, 55777, &timestamp, 111);
+
+    int frameIndex = getIndexOfPageInFrameTable(frameTable, 2, 55555);
+    fprintf(stderr, "index %d\n", frameIndex);
+    
+    setClock(&timestamp, 5, 5);
+    touchPage(frameTable, 2, 55555, &timestamp, 888);
+
+    removePageFromFrameTable(frameTable, 3, 55656);
+
+    removePageFromFrameTable(frameTable, 2, 55555);
+
+    touchPage(frameTable, 4, 55767, &timestamp, 111);
+
+    makeDirty(frameTable, 4, 55767);
+
     printFrameTable(frameTable);
 
+    printf("\n");
+
+    //Full frame table
+    initFrameTable(frameTable);
+
+    for(i = 0; i < FT_SIZE - 1; ++i) {
+        touchPage(frameTable, i + 1, i + 1001, &timestamp, rand() % 100);
+        advanceClock(&timestamp, 0, 99);
+    }
+
+    touchPage(frameTable, 4, 55777, &timestamp, 111);
+
+    advanceClock(&timestamp, 0, 99);
+
+    printFrameTable(frameTable);
+
+    touchPage(frameTable, 4, 55777, &timestamp, 111);
+
+    printf("\n");
+
+    printFrameTable(frameTable);
+
+    touchPage(frameTable, 7, 55778, &timestamp, 131);
+
+    touchPage(frameTable, 17, 88888, &timestamp, 151);
+
+    advanceClock(&timestamp, 0, 99);
+
+    touchPage(frameTable, 17, 88888, &timestamp, 151);
+
+    removePageFromFrameTable(frameTable, 8, 1008);
+
+    touchPage(frameTable, 17, 88889, &timestamp, 151);
+
+    printf("\n");
+
+    printFrameTable(frameTable);
 
     printf("-----\n");
 

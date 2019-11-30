@@ -12,7 +12,7 @@
 #define PAGE_SIZE 1024          //(1K)
 
 #define PT_SIZE 32
-#define FT_SIZE 256
+#define FT_SIZE 25         //256
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,7 +64,7 @@ int pageFault(FrameTable* frameTable);
 void addPageToFrameTable(FrameTable* frameTable, long page, int pid, Clock timestamp, long ref);
 void makeDirty(FrameTable* frameTable, long page, int pid);
 void removePageFromFrameTable(FrameTable* frameTable, long page, int pid);
-void touchPage(FrameTable* frameTable, long page, int pid, int readWrite, Clock* mainTime, long ref);
+void touchPage(FrameTable* frameTable, long page, int pid, Clock* mainTime, long ref);
 
 //Utility
 int getIndexOfPageInFrameTable(FrameTable* frameTable, long page, int pid);
