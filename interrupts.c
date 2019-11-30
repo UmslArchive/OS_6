@@ -37,7 +37,6 @@ void usrSignalHandler(int signal) {
     switch(signal) {
         case SIGTERM:
             fprintf(stderr, "USR %d caught SIGTERM signal\n", getpid());
-            raise(SIGUSR2);
             usrSignalReceivedFlag = 1;
             break;
     } 

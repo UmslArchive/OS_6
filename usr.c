@@ -19,7 +19,7 @@ int main(int arg, char* argv[]) {
     usrInitSignalHandler();
     sigaction(SIGTERM, &usrSigAction, 0);
     sigaction(SIGINT, &usrSigAction, 0);
-    
+
     //Get shared memory pointers
     sem_t* shmSemPtr = 
         initShmSemaphore (
@@ -94,7 +94,7 @@ int main(int arg, char* argv[]) {
                 shmClockPtr->seconds,
                 shmClockPtr->nanoseconds
             );
-            advanceClock(&reqTime, 0, rand() % 50000);
+            advanceClock(&reqTime, 1, rand() % 50000);
         }
     }
 
