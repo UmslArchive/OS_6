@@ -54,6 +54,8 @@ int pageFault(FrameTable* frameTable) {
 }
 
 int addPageToFrameTable(FrameTable* frameTable, long page, int pid, Clock timestamp, long ref) {
+    FILE* logger2 = NULL;
+    logger2 = fopen("log.txt", "a");
     int pageFaulted = 0;
     //Get a frame
     int frameIndex = getIndexOfFirstEmptyFrame(frameTable);
@@ -61,6 +63,33 @@ int addPageToFrameTable(FrameTable* frameTable, long page, int pid, Clock timest
         //fprintf(stderr, "page fault\n");
         pageFaulted = 1;
         frameIndex = pageFault(frameTable);
+
+        //Log page fault
+        fprintf (
+            logger2, 
+            "Master: Address %ld not in a frame, pagefault\n",
+            ref
+        );
+
+        fprintf (
+            logger2, 
+            "Master: Clearing frame %d and swapping in %d page %ld\n",
+            frameIndex,
+            pid,
+            page
+        );
+    } 
+    else {
+        //Log new page in frame
+        fprintf (
+            logger2, 
+            "Master: Address %ld in frame %d, giving data to %d at time %d:%d\n",
+            ref,
+            frameIndex,
+            pid,
+            timestamp.seconds,
+            timestamp.nanoseconds
+        );
     }
 
     //Set the frame
@@ -74,6 +103,8 @@ int addPageToFrameTable(FrameTable* frameTable, long page, int pid, Clock timest
         timestamp.seconds,
         timestamp.nanoseconds
     );
+
+    fclose(logger2);
 
     return pageFaulted;
 }
@@ -126,25 +157,40 @@ int getIndexOfFirstEmptyFrame(FrameTable* frameTable) {
 }
 
 int touchPage(FrameTable* frameTable, long page, int pid, Clock* mainTime, long ref) {
+    FILE* logger3 = NULL;
     int frameIndex = getIndexOfPageInFrameTable(frameTable, page, pid);
     Clock ts;
     setClock(&ts, mainTime->seconds, mainTime->nanoseconds);
 
     if(frameIndex == -1) {
         return addPageToFrameTable(frameTable, page, pid, ts, ref);
-        
     }
 
     setClock(&frameTable->table[frameIndex].timestamp, ts.seconds, ts.nanoseconds);
 
+    logger3 = fopen("log.txt", "a");
+    
+    //Log frame access
+    fprintf (
+        logger3, 
+        "Master: Address %ld in frame %d, giving data to %d at time %d:%d\n",
+        ref,
+        frameIndex,
+        pid,
+        ts.seconds,
+        ts.nanoseconds
+    );
+
+    fclose(logger3);
+
     return 0;
 }
 
-void printFrameTable(FrameTable* frameTable) {
+void printFrameTable(FILE* fptr, FrameTable* frameTable) {
     int i;
     for(i = 0; i < FT_SIZE; ++i) {
         fprintf (
-            stderr,
+            fptr,
             "F#%.3d pid(%.5d) page(%.2ld) ts(%.2d:%.9d), ref(%.2ld), dirt(%d)\n",
             i,
             frameTable->table[i].pid,

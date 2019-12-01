@@ -251,7 +251,7 @@ void testMemoryManage() {
 
     makeDirty(frameTable, 4, 55767);
 
-    printFrameTable(frameTable);
+    printFrameTable(stderr, frameTable);
 
     printf("\n");
 
@@ -267,13 +267,13 @@ void testMemoryManage() {
 
     advanceClock(&timestamp, 0, 99);
 
-    printFrameTable(frameTable);
+    printFrameTable(stderr, frameTable);
 
     touchPage(frameTable, 4, 55777, &timestamp, 111);
 
     printf("\n");
 
-    printFrameTable(frameTable);
+    printFrameTable(stderr, frameTable);
 
     touchPage(frameTable, 7, 55778, &timestamp, 131);
 
@@ -289,7 +289,7 @@ void testMemoryManage() {
 
     printf("\n");
 
-    printFrameTable(frameTable);
+    printFrameTable(stderr, frameTable);
 
     printf("-----\n");
 

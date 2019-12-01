@@ -12,6 +12,11 @@
 
 int main(int arg, char* argv[]) {
 
+    //Logging
+    FILE* logger = NULL;
+    logger = fopen("log.txt", "w");
+    fclose(logger);
+
     //Counters and iterators
     int i, j, k;
     PCB* pcbIter;
@@ -89,6 +94,7 @@ int main(int arg, char* argv[]) {
     double accessPerSecond, faultsPerAccess, avgAccessSpeed;
 
     int pageFaulted = 0;
+    int extraTime = 0;
 
     //-----
 
@@ -99,6 +105,19 @@ int main(int arg, char* argv[]) {
             printClock(shmClockPtr);
             fprintf(stderr, "\n\n");
             prevSecond = shmClockPtr->seconds;
+
+            //Log frame table each "second"
+            logger = fopen("log.txt", "a");
+            fprintf (
+                logger, 
+                "\nFRAME TABLE @ Time(%d:%d)\n",
+                shmClockPtr->seconds,
+                shmClockPtr->nanoseconds
+            );
+            printFrameTable(logger, shmFrameTable);
+            fprintf(logger, "\n");
+            fclose(logger);
+
             sleep(2);
         }
 
@@ -107,12 +126,41 @@ int main(int arg, char* argv[]) {
         msgReqType = -1;
         msgReqAddr = -1;
         msgPage = -1;
-        ossReceiveMessage(&msgPid, &msgReqType, &msgReqAddr, &msgPage);
+        extraTime = 0;
+        ossReceiveMessage(&msgPid, &msgReqType, &msgReqAddr, &msgPage);        
 
         if(msgPid != -1) {
 
+            //Log request
+            logger = fopen("log.txt", "a");
+            if(msgReqType == READ) {
+                fprintf (
+                    logger, 
+                    "Master: %d requesting READ of addr %d at time %d:%d\n",
+                    msgPid,
+                    msgReqAddr,
+                    shmClockPtr->seconds,
+                    shmClockPtr->nanoseconds
+                );
+            }
+            else {
+                fprintf (
+                    logger, 
+                    "Master: %d requesting WRITE of addr %d at time %d:%d\n",
+                    msgPid,
+                    msgReqAddr,
+                    shmClockPtr->seconds,
+                    shmClockPtr->nanoseconds
+                );
+            }
+            fclose(logger);
+
             setClock(&timestamp, shmClockPtr->seconds, shmClockPtr->nanoseconds);
             pageFaulted = touchPage(shmFrameTable, msgPage, msgPid, &timestamp, msgReqAddr);
+
+            if(pageFaulted) {
+                extraTime += 14000000;
+            }
             
             pcbIter = shmPcbPtr;
             pcbIter += getIndexOfPid(shmPcbPtr, msgPid);
@@ -128,6 +176,7 @@ int main(int arg, char* argv[]) {
                 }
                 else {
                     makeDirty(shmFrameTable, msgPage, msgPid);
+                    extraTime += 50;
                     sprintf (
                         msgBuff,
                         "%d,APPROVED,WRITE,%d",
@@ -138,8 +187,6 @@ int main(int arg, char* argv[]) {
                 ossSendMessage(pcbIter->pid, msgBuff);
                 pcbIter->state = READY;
             }
-
-            printFrame(shmFrameTable, getIndexOfPageInFrameTable(shmFrameTable, msgPage, msgPid));
         }
         
 
@@ -158,7 +205,7 @@ int main(int arg, char* argv[]) {
 
         //Advance the clock
         sem_wait(shmSemPtr);
-            advanceClock(shmClockPtr, 0, TICK_RATE);
+            advanceClock(shmClockPtr, 0, TICK_RATE + extraTime);
         sem_post(shmSemPtr);
 
         //Wait on dead child if there is one
