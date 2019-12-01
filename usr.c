@@ -126,10 +126,11 @@ int main(int arg, char* argv[]) {
 
     //-----
 
-    //Calculate death statistics
-    float maps = 0;
-    float pfpma = 0;
-    float amas = 0;
+    //Calculate death statistics:
+
+    double maps = 0;
+    double pfpma = 0;
+    double amas = 0;
 
     //maps
     Clock now;
@@ -138,6 +139,9 @@ int main(int arg, char* argv[]) {
     double totalTimeFloat = totalRuntime.seconds;
     totalTimeFloat += (double)totalRuntime.nanoseconds / 1000000000.0f;
     maps = (double)referenceCount / totalTimeFloat;
+
+    //pfpma
+    pfpma = (double)pageFaults / (double)referenceCount;
 
     sprintf(msgBuff, "%f,%f,%f", maps, pfpma, amas);
     sendDeathMessage(msgBuff);
