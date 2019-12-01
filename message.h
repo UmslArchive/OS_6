@@ -51,9 +51,9 @@ void destroyMessageQueue();
 void ossSendMessage(long pid, const char* text);
 void ossReceiveMessage(int* msgPid, int* msgReqType, int* msgReqAddr, int* msgPage);
 void usrSendMessage(const char* text);
-void usrReceiveMessage();
+void usrReceiveMessage(long pid, int* faultCounter);
 
 void sendDeathMessage(const char* text);
-void receiveDeathMessage(long* accessPerSecond, long* faultsPerAccess, Clock* avgAccessSpeed);
+void receiveDeathMessage(double* accessPerSecond, double* faultsPerAccess, double* avgAccessSpeed);
 
 #endif

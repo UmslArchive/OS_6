@@ -139,7 +139,7 @@ void addToPcbArray(PCB* pcbArray, pid_t pid) {
     iterator->state = INITIALIZING;
 }
 
-void waitNoBlock(PCB* pcbArray, FrameTable* frameTable, long* accessPerSecond, long* faultsPerAccess, Clock* avgAccessSpeed) {
+void waitNoBlock(PCB* pcbArray, FrameTable* frameTable, double* accessPerSecond, double* faultsPerAccess, double* avgAccessSpeed) {
     while((pid = waitpid(-1, &exitStatus, WNOHANG))) {
         if((pid == -1) && (errno != EINTR))
             break;

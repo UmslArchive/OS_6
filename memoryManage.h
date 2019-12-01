@@ -61,11 +61,11 @@ void destroyFrameTable();
 
 //Managers
 int pageFault(FrameTable* frameTable);
-void addPageToFrameTable(FrameTable* frameTable, long page, int pid, Clock timestamp, long ref);
+int addPageToFrameTable(FrameTable* frameTable, long page, int pid, Clock timestamp, long ref);
 void makeDirty(FrameTable* frameTable, long page, int pid);
 void removePageFromFrameTable(FrameTable* frameTable, long page, int pid);
 void removePidPagesFromFrameTable(FrameTable* frameTable, int pid);
-void touchPage(FrameTable* frameTable, long page, int pid, Clock* mainTime, long ref);
+int touchPage(FrameTable* frameTable, long page, int pid, Clock* mainTime, long ref);
 
 //Utility
 int getIndexOfPageInFrameTable(FrameTable* frameTable, long page, int pid);

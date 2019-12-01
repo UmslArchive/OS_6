@@ -53,11 +53,13 @@ int pageFault(FrameTable* frameTable) {
     return oldestIndex;
 }
 
-void addPageToFrameTable(FrameTable* frameTable, long page, int pid, Clock timestamp, long ref) {
+int addPageToFrameTable(FrameTable* frameTable, long page, int pid, Clock timestamp, long ref) {
+    int pageFaulted = 0;
     //Get a frame
     int frameIndex = getIndexOfFirstEmptyFrame(frameTable);
     if(frameIndex == -1) {
         //fprintf(stderr, "page fault\n");
+        pageFaulted = 1;
         frameIndex = pageFault(frameTable);
     }
 
@@ -72,6 +74,8 @@ void addPageToFrameTable(FrameTable* frameTable, long page, int pid, Clock times
         timestamp.seconds,
         timestamp.nanoseconds
     );
+
+    return pageFaulted;
 }
 
 void makeDirty(FrameTable* frameTable, long page, int pid) {
@@ -121,17 +125,19 @@ int getIndexOfFirstEmptyFrame(FrameTable* frameTable) {
     return -1;
 }
 
-void touchPage(FrameTable* frameTable, long page, int pid, Clock* mainTime, long ref) {
+int touchPage(FrameTable* frameTable, long page, int pid, Clock* mainTime, long ref) {
     int frameIndex = getIndexOfPageInFrameTable(frameTable, page, pid);
     Clock ts;
     setClock(&ts, mainTime->seconds, mainTime->nanoseconds);
 
     if(frameIndex == -1) {
-        addPageToFrameTable(frameTable, page, pid, ts, ref);
-        return;
+        return addPageToFrameTable(frameTable, page, pid, ts, ref);
+        
     }
 
-    setClock(&frameTable->table[frameIndex].timestamp, ts.seconds, ts.nanoseconds);    
+    setClock(&frameTable->table[frameIndex].timestamp, ts.seconds, ts.nanoseconds);
+
+    return 0;
 }
 
 void printFrameTable(FrameTable* frameTable) {

@@ -41,7 +41,7 @@ void initPcb(PCB* pcbIterator);
 //oss process management functions:
 int spawnProcess(PCB* pcbArray);
 void addToPcbArray(PCB* pcbArray, pid_t pid);
-void waitNoBlock(PCB* pcbArray, FrameTable* frameTable, long* accessPerSecond, long* faultsPerAccess, Clock* avgAccessSpeed);
+void waitNoBlock(PCB* pcbArray, FrameTable* frameTable, double* accessPerSecond, double* faultsPerAccess, double* avgAccessSpeed);
 void removeFromPcbArray(PCB* pcbArray, pid_t pid);
 int areActiveProcesses(PCB* pcbArray);
 void killChildren(PCB* pcbArray);

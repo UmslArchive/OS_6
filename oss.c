@@ -86,8 +86,9 @@ int main(int arg, char* argv[]) {
     int prevSecond = shmClockPtr->seconds;
 
     //Child death stats
-    long accessPerSecond, faultsPerAccess;
-    Clock avgAccessSpeed;
+    double accessPerSecond, faultsPerAccess, avgAccessSpeed;
+
+    int pageFaulted = 0;
 
     //-----
 
@@ -111,7 +112,7 @@ int main(int arg, char* argv[]) {
         if(msgPid != -1) {
 
             setClock(&timestamp, shmClockPtr->seconds, shmClockPtr->nanoseconds);
-            touchPage(shmFrameTable, msgPage, msgPid, &timestamp, msgReqAddr);
+            pageFaulted = touchPage(shmFrameTable, msgPage, msgPid, &timestamp, msgReqAddr);
             
             pcbIter = shmPcbPtr;
             pcbIter += getIndexOfPid(shmPcbPtr, msgPid);
@@ -120,18 +121,18 @@ int main(int arg, char* argv[]) {
                 if(msgReqType == READ) {
                     sprintf (
                         msgBuff, 
-                        "%d APPROVED for READ at %d", 
-                        msgPid, 
-                        msgReqAddr
+                        "%d,APPROVED,READ,%d",
+                        msgPid,
+                        pageFaulted
                     );
                 }
                 else {
                     makeDirty(shmFrameTable, msgPage, msgPid);
                     sprintf (
                         msgBuff,
-                        "%d APPROVED for WRITE at %d",
+                        "%d,APPROVED,WRITE,%d",
                         msgPid,
-                        msgReqAddr
+                        pageFaulted
                     );
                 }
                 ossSendMessage(pcbIter->pid, msgBuff);
@@ -164,7 +165,7 @@ int main(int arg, char* argv[]) {
         waitNoBlock(shmPcbPtr, shmFrameTable, &accessPerSecond, &faultsPerAccess, &avgAccessSpeed);
     }
 
-    printFrameTable(shmFrameTable);
+    //printFrameTable(shmFrameTable);
 
     //-----
 

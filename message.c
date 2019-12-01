@@ -99,14 +99,37 @@ void usrSendMessage(const char* text) {
     msgsnd(msgID, &newMsg, len, 0);
 }
 
-void usrReceiveMessage(long pid) {
+void usrReceiveMessage(long pid, int* faultCounter) {
     struct Msg rcvMsg;
+    int i, read;
+    char* token = NULL;
     int success = msgrcv(msgID, &rcvMsg, sizeof(rcvMsg.msgText), pid, IPC_NOWAIT);
     if(success != -1) {
+        //Parse the message
+        token = strtok(rcvMsg.msgText, ",");
+        for(i = 0; i < 3; ++i){
+            token = strtok(NULL, ",");
+            switch(i) {
+                case 1:
+                    if(strcmp(token, "READ") == 0) {
+                        read = READ;
+                    }
+                    else if(strcmp(token, "WRITE") == 0) {
+                        read = WRITE;
+                    }
+                break;
+
+                case 2:
+                    if(atoi(token) == 1)
+                        (*faultCounter) += 1;
+                break;
+            }
+        }
+
         fprintf (
             stderr,
-            "USR %ld rcv: %s\n",
-            pid, rcvMsg.msgText
+            "USR %ld rcv: APPROVED READ/WRITE(%d) PF(%d)\n",
+            pid, read, *faultCounter
         );
     }
 }
@@ -119,7 +142,7 @@ void sendDeathMessage(const char* text) {
     msgsnd(msgID, &newMsg, len, 0);
 }
 
-void receiveDeathMessage(long* accessPerSecond, long* faultsPerAccess, Clock* avgAccessSpeed) {
+void receiveDeathMessage(double* accessPerSecond, double* faultsPerAccess, double* avgAccessSpeed) {
     struct Msg rcvMsg;
     int i;
     char* token = NULL;
@@ -135,31 +158,26 @@ void receiveDeathMessage(long* accessPerSecond, long* faultsPerAccess, Clock* av
     if(success != -1) {
         //Parse the message
         token = strtok(rcvMsg.msgText, ",");
-        *accessPerSecond = atoi(token);
+        *accessPerSecond = atof(token);
         for(i = 0; i < 3; ++i){
             token = strtok(NULL, ",");
             switch(i) {
                 case 0:
-                    *faultsPerAccess = atoi(token);
+                    *faultsPerAccess = atof(token);
                 break;
 
                 case 1:
-                    avgAccessSpeed->seconds = atoi(token);
-                break;
-
-                case 2:
-                    avgAccessSpeed->nanoseconds = atoi(token);
+                    *avgAccessSpeed = atof(token);
                 break;
             }
         }
 
         fprintf (
             stderr, 
-            "DEATH: %ld %ld %d:%d\n", 
+            "DEATH: %f %f %f\n", 
             *accessPerSecond, 
             *faultsPerAccess, 
-            avgAccessSpeed->seconds,
-            avgAccessSpeed->nanoseconds
+            *avgAccessSpeed
         );
     }
 }

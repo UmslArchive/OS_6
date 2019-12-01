@@ -45,6 +45,10 @@ int main(int arg, char* argv[]) {
             SHM_USR_FLAGS
         );
 
+    //Save spawn time
+    Clock spawnTime;
+    setClock(&spawnTime, shmClockPtr->seconds, shmClockPtr->nanoseconds);
+
     //Get PCB index and iterator
     int pcbIndex = getIndexOfPid(shmPcbPtr, getpid());
     PCB* pcbIterator = shmPcbPtr + pcbIndex;
@@ -80,7 +84,7 @@ int main(int arg, char* argv[]) {
 
     while(!usrSignalReceivedFlag) {
 
-        usrReceiveMessage((long)getpid());
+        usrReceiveMessage((long)getpid(), &pageFaults);
 
         //Send request if it is time
         if(checkIfPassedTime(shmClockPtr, &reqTime) == 1) {
@@ -122,7 +126,21 @@ int main(int arg, char* argv[]) {
 
     //-----
 
-    sendDeathMessage("1,2,3,4");
+    //Calculate death statistics
+    float maps = 0;
+    float pfpma = 0;
+    float amas = 0;
+
+    //maps
+    Clock now;
+    setClock(&now, shmClockPtr->seconds, shmClockPtr->nanoseconds);
+    Clock totalRuntime = timeDifference(&now, &spawnTime);
+    double totalTimeFloat = totalRuntime.seconds;
+    totalTimeFloat += (double)totalRuntime.nanoseconds / 1000000000.0f;
+    maps = (double)referenceCount / totalTimeFloat;
+
+    sprintf(msgBuff, "%f,%f,%f", maps, pfpma, amas);
+    sendDeathMessage(msgBuff);
 
     detachAll();
 
