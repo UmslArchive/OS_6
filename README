@@ -1,0 +1,18 @@
+Author: Colby Ackerman
+Class: CS4760
+Assign: #6
+Date: 11/30/19
+
+INSTALL:
+    `make`
+
+RUN:
+    `./oss LRU`
+        OR
+    `./oss FIFO`
+
+GIT:
+    https://github.com/CSnackerman/umslOsAss6
+
+QUESTIONS?
+    Just ask. I'm tired.
