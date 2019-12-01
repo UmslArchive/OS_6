@@ -65,7 +65,7 @@ int addPageToFrameTable(FrameTable* frameTable, long page, int pid, Clock timest
 void makeDirty(FrameTable* frameTable, long page, int pid);
 void removePageFromFrameTable(FrameTable* frameTable, long page, int pid);
 void removePidPagesFromFrameTable(FrameTable* frameTable, int pid);
-int touchPage(FrameTable* frameTable, long page, int pid, Clock* mainTime, long ref);
+int touchPage(FrameTable* frameTable, long page, int pid, Clock* mainTime, long ref, char* option);
 
 //Utility
 int getIndexOfPageInFrameTable(FrameTable* frameTable, long page, int pid);

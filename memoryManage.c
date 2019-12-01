@@ -156,7 +156,7 @@ int getIndexOfFirstEmptyFrame(FrameTable* frameTable) {
     return -1;
 }
 
-int touchPage(FrameTable* frameTable, long page, int pid, Clock* mainTime, long ref) {
+int touchPage(FrameTable* frameTable, long page, int pid, Clock* mainTime, long ref, char* option) {
     FILE* logger3 = NULL;
     int frameIndex = getIndexOfPageInFrameTable(frameTable, page, pid);
     Clock ts;
@@ -166,7 +166,9 @@ int touchPage(FrameTable* frameTable, long page, int pid, Clock* mainTime, long 
         return addPageToFrameTable(frameTable, page, pid, ts, ref);
     }
 
-    setClock(&frameTable->table[frameIndex].timestamp, ts.seconds, ts.nanoseconds);
+    if(strcmp(option, "LRU") == 0) {
+        setClock(&frameTable->table[frameIndex].timestamp, ts.seconds, ts.nanoseconds);
+    }
 
     logger3 = fopen("log.txt", "a");
     

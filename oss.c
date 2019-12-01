@@ -10,7 +10,13 @@
 #define TICK_RATE 500            //ns
 #define SPAWN_RATE 499999999    //ns
 
-int main(int arg, char* argv[]) {
+int main(int argc, char* argv[]) {
+
+    //LRU or FIFO
+    char* LRUorFIFO;
+    if(argc > 1) {
+        LRUorFIFO = argv[1];
+    }
 
     //Logging
     FILE* logger = NULL;
@@ -156,7 +162,7 @@ int main(int arg, char* argv[]) {
             fclose(logger);
 
             setClock(&timestamp, shmClockPtr->seconds, shmClockPtr->nanoseconds);
-            pageFaulted = touchPage(shmFrameTable, msgPage, msgPid, &timestamp, msgReqAddr);
+            pageFaulted = touchPage(shmFrameTable, msgPage, msgPid, &timestamp, msgReqAddr, LRUorFIFO);
 
             if(pageFaulted) {
                 extraTime += 14000000;
