@@ -151,6 +151,20 @@ void waitNoBlock(PCB* pcbArray, FrameTable* frameTable, double* accessPerSecond,
             );
             
             receiveDeathMessage(accessPerSecond, faultsPerAccess, avgAccessSpeed);
+
+            //Log death stats
+            FILE* logger4 = NULL;
+            logger4 = fopen("log.txt", "a");
+            fprintf (
+                logger4,
+                "\nDEATH: %d\n\tAccesses/second: %f\n\tFaults/Access: %f\n\t Avg Mem Access Speed: %f\n\n",
+                pid,
+                *accessPerSecond,
+                *faultsPerAccess,
+                *avgAccessSpeed
+            );
+            fclose(logger4);
+
             removeFromPcbArray(pcbArray, pid);
             removePidPagesFromFrameTable(frameTable, pid);
         }

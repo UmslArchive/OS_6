@@ -164,7 +164,6 @@ int main(int arg, char* argv[]) {
             
             pcbIter = shmPcbPtr;
             pcbIter += getIndexOfPid(shmPcbPtr, msgPid);
-            //printPcb(shmPcbPtr, getIndexOfPid(shmPcbPtr, msgPid));
             if(pcbIter->state == WAITING) {             
                 if(msgReqType == READ) {
                     sprintf (
@@ -176,6 +175,14 @@ int main(int arg, char* argv[]) {
                 }
                 else {
                     makeDirty(shmFrameTable, msgPage, msgPid);
+
+                    logger = fopen("log.txt", "a");
+                    fprintf (
+                        logger, 
+                        "Master: Dirty bit of frame %d set, adding additional time to the clock\n",
+                        getIndexOfPageInFrameTable(shmFrameTable, msgPage, msgPid)
+                    );
+                    fclose(logger);
                     extraTime += 50;
                     sprintf (
                         msgBuff,
@@ -211,8 +218,6 @@ int main(int arg, char* argv[]) {
         //Wait on dead child if there is one
         waitNoBlock(shmPcbPtr, shmFrameTable, &accessPerSecond, &faultsPerAccess, &avgAccessSpeed);
     }
-
-    //printFrameTable(shmFrameTable);
 
     //-----
 
