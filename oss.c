@@ -73,6 +73,7 @@ int main(int arg, char* argv[]) {
 
     //Message queue init
     int msgPid, msgReqType, msgReqAddr, msgPage;
+    Clock timestamp;
     char msgBuff[100];
     ossInitMessageQueue();
 
@@ -106,9 +107,10 @@ int main(int arg, char* argv[]) {
         msgPage = -1;
         ossReceiveMessage(&msgPid, &msgReqType, &msgReqAddr, &msgPage);
 
-        //touchPage(shmFrameTable, )
-
         if(msgPid != -1) {
+
+            setClock(&timestamp, shmClockPtr->seconds, shmClockPtr->nanoseconds);
+            touchPage(shmFrameTable, msgPage, msgPid, &timestamp, msgReqAddr);
             
             pcbIter = shmPcbPtr;
             pcbIter += getIndexOfPid(shmPcbPtr, msgPid);
@@ -123,6 +125,7 @@ int main(int arg, char* argv[]) {
                     );
                 }
                 else {
+                    makeDirty(shmFrameTable, msgPage, msgPid);
                     sprintf (
                         msgBuff,
                         "%d APPROVED for WRITE at %d",
@@ -133,6 +136,8 @@ int main(int arg, char* argv[]) {
                 ossSendMessage(pcbIter->pid, msgBuff);
                 pcbIter->state = READY;
             }
+
+            printFrame(shmFrameTable, getIndexOfPageInFrameTable(shmFrameTable, msgPage, msgPid));
         }
         
 
@@ -157,6 +162,8 @@ int main(int arg, char* argv[]) {
         //Wait on dead child if there is one
         waitNoBlock(shmPcbPtr, &accessPerSecond, &faultsPerAccess, &avgAccessSpeed);
     }
+
+    printFrameTable(shmFrameTable);
 
     //-----
 
