@@ -13,7 +13,7 @@
 int main(int argc, char* argv[]) {
 
     //LRU or FIFO
-    char* LRUorFIFO;
+    char* LRUorFIFO = "LRU";
     if(argc > 1) {
         LRUorFIFO = argv[1];
     }
