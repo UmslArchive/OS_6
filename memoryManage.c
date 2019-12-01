@@ -88,6 +88,15 @@ void removePageFromFrameTable(FrameTable* frameTable, long page, int pid) {
     initClock(&frameTable->table[frameIndex].timestamp);
 }
 
+void removePidPagesFromFrameTable(FrameTable* frameTable, int pid) {
+    int i;
+    for(i = 0; i < FT_SIZE; ++i) {
+        if(frameTable->table[i].pid == pid) {
+            removePageFromFrameTable(frameTable, frameTable->table[i].page, pid);
+        }
+    }
+}
+
 int getIndexOfPageInFrameTable(FrameTable* frameTable, long page, int pid) {
     int i;
     for(i = 0; i < FT_SIZE; ++i) {

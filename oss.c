@@ -94,8 +94,9 @@ int main(int arg, char* argv[]) {
     while(!ossSignalReceivedFlag) {
 
         if(shmClockPtr->seconds > prevSecond) {
-            fprintf(stderr, "\t\t\t\t");
+            fprintf(stderr, "\n\n");
             printClock(shmClockPtr);
+            fprintf(stderr, "\n\n");
             prevSecond = shmClockPtr->seconds;
             sleep(2);
         }
@@ -160,7 +161,7 @@ int main(int arg, char* argv[]) {
         sem_post(shmSemPtr);
 
         //Wait on dead child if there is one
-        waitNoBlock(shmPcbPtr, &accessPerSecond, &faultsPerAccess, &avgAccessSpeed);
+        waitNoBlock(shmPcbPtr, shmFrameTable, &accessPerSecond, &faultsPerAccess, &avgAccessSpeed);
     }
 
     printFrameTable(shmFrameTable);
@@ -172,7 +173,7 @@ int main(int arg, char* argv[]) {
 
     //Wait on remaining processes
     while(areActiveProcesses(shmPcbPtr) == 1)
-        waitNoBlock(shmPcbPtr, &accessPerSecond, &faultsPerAccess, &avgAccessSpeed);
+        waitNoBlock(shmPcbPtr, shmFrameTable, &accessPerSecond, &faultsPerAccess, &avgAccessSpeed);
 
     //Cleanup shared memory and message queue
     cleanupAll();
