@@ -65,11 +65,6 @@ int main(int arg, char* argv[]) {
     char msgBuff[100];
     int readOrWrite = 0;
 
-    //Set state to ready
-    pcbIterator->state = READY;
-
-    //-----
-
     //Requests
     int page, genAddr;
     int processSize = rand() % MAX_PROCESS_SIZE + 1;
@@ -81,6 +76,12 @@ int main(int arg, char* argv[]) {
     initClock(&totalAccessTime);
     int dieCheck = 1000 + (rand() % 200) - 100;
     int die;
+    Clock waitStart, waitStop, waitElapsed, timeDiff;
+    initClock(&waitElapsed);
+
+    //-----
+
+    pcbIterator->state = READY;
 
     while(!usrSignalReceivedFlag) {
 
@@ -107,9 +108,18 @@ int main(int arg, char* argv[]) {
             }
             
             pcbIterator->state = WAITING;
+            setClock(&waitStart, shmClockPtr->seconds, shmClockPtr->nanoseconds);
             usrSendMessage(msgBuff);
             while(pcbIterator->state == WAITING && !usrSignalReceivedFlag);
+            setClock(&waitStop, shmClockPtr->seconds, shmClockPtr->nanoseconds);
+
+            //Accumulate wait time
+            timeDiff = timeDifference(&waitStop, &waitStart);
+            advanceClock(&waitElapsed, timeDiff.seconds, timeDiff.nanoseconds);
+
             referenceCount++;
+
+            
 
             /* if(!usrSignalReceivedFlag)
                 fprintf(stderr, "%d has made %d refs\n", getpid(), referenceCount); */
@@ -138,10 +148,17 @@ int main(int arg, char* argv[]) {
     Clock totalRuntime = timeDifference(&now, &spawnTime);
     double totalTimeFloat = totalRuntime.seconds;
     totalTimeFloat += (double)totalRuntime.nanoseconds / 1000000000.0f;
+
     maps = (double)referenceCount / totalTimeFloat;
 
     //pfpma
     pfpma = (double)pageFaults / (double)referenceCount;
+
+    //amas
+    double totalWaitTimeFloat = waitElapsed.seconds;
+    totalWaitTimeFloat += (double)waitElapsed.nanoseconds / 1000000000.0f;
+
+    amas = totalWaitTimeFloat / (double)referenceCount;
 
     sprintf(msgBuff, "%f,%f,%f", maps, pfpma, amas);
     sendDeathMessage(msgBuff);

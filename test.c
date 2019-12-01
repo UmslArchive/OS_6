@@ -27,7 +27,7 @@ int main() {
     testProcessSpawnDespawn();
 
     //Memory tests
-    //testMemoryManage();
+    testMemoryManage();
 
     return 0;
 }
